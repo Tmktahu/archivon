@@ -269,6 +269,7 @@
                   type="text" 
                   id="keyword" 
                   bind:value={keyword}
+                  on:input={(e) => keyword = e.target.value.toLowerCase()}
                   placeholder="Enter your cipher key..."
                   class="w-full bg-zinc-900/80 border-2 border-silver-700 rounded-none px-4 py-3 text-silver-300 focus:outline-none focus:ring-2 focus:ring-silver-500 font-mono text-sm h-[50px]"
                 />
@@ -402,7 +403,7 @@
         <div class="h-px w-12 bg-gradient-to-l from-transparent to-silver-500/60"></div>
       </div>
       
-      <p class="mb-2 text-xs typewriter text-silver-400/70">For members of the Order only. Unauthorized access is forbidden.</p>
+      <p class="mb-2 text-xs typewriter text-silver-400/70">"Through hidden words, truth reveals itself to those who seek"</p>
       <p class="text-xs typewriter text-silver-400/70">Use this utility to encode sensitive information before sending it to the Order.</p>
     </div>
   </footer>
@@ -801,7 +802,7 @@
     position: absolute;
     width: 200px;
     height: 200px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='none' stroke='%238f7747' stroke-width='0.4' d='M50 10 C50 8.34 13.66 7 12 7 C10.34 7 9 8.34 9 10 C9 11.66 10.34 13 12 13 L12 17 M12 13 L15 13 M12 15 L15 15'/%3E%3Cpath fill='none' stroke='%238f7747' stroke-width='0.4' d='M30 30 L70 70 M30 70 L70 30 M40 20 L60 80 M20 40 L80 60 M20 60 L80 40 M40 80 L60 20'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='none' stroke='%238f7747' stroke-width='0.4' d='M12 10 C5 10 3 12 3 12 C3 12 5 17 12 17 C19 17 21 12 21 12 C21 12 19 7 12 7 Z'/%3E%3Cpath fill='none' stroke='%238f7747' stroke-width='0.4' d='M30 30 L70 70 M30 70 L70 30 M40 20 L60 80 M20 40 L80 60 M20 60 L80 40 M40 80 L60 20'/%3E%3C/svg%3E");
     background-size: contain;
     background-repeat: no-repeat;
     opacity: 0.2;

@@ -27,13 +27,21 @@ export function parseTextContent(content: string): TextSource {
 }
 
 /**
- * Generates a numeric seed from a keyword
- * @param keyword The keyword to generate a seed from
- * @returns A numeric seed value
+ * Generates a seed value from a keyword
+ * @param keyword Keyword to generate seed from
+ * @returns Numeric seed value
  */
 export function generateSeedFromKeyword(keyword: string): number {
-  // Simple sum of character codes for more predictable results
-  return keyword.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  if (!keyword) return 0;
+  
+  // Convert keyword to lowercase to ensure case-insensitivity for the key
+  const lowercaseKeyword = keyword.toLowerCase();
+  
+  let seed = 0;
+  for (let i = 0; i < lowercaseKeyword.length; i++) {
+    seed += lowercaseKeyword.charCodeAt(i);
+  }
+  return seed;
 }
 
 /**
@@ -138,7 +146,10 @@ function getCharacterFromFallback(fallbackEncoding: string): string | null {
 export function encodeMessage(message: string, textSource: TextSource, keyword: string): string {
   if (!message || !keyword || !textSource.rawText) return '';
   
-  const seed = generateSeedFromKeyword(keyword);
+  // Convert keyword to lowercase to ensure case-insensitivity for the key
+  const lowercaseKeyword = keyword.toLowerCase();
+  
+  const seed = generateSeedFromKeyword(lowercaseKeyword);
   const sourceText = textSource.rawText;
   const sourceLength = sourceText.length;
   
@@ -196,7 +207,10 @@ export function encodeMessage(message: string, textSource: TextSource, keyword: 
 export function decodeMessage(encodedMessage: string, textSource: TextSource, keyword: string): string {
   if (!encodedMessage || !keyword || !textSource.rawText) return '';
   
-  const seed = generateSeedFromKeyword(keyword);
+  // Convert keyword to lowercase to ensure case-insensitivity for the key
+  const lowercaseKeyword = keyword.toLowerCase();
+  
+  const seed = generateSeedFromKeyword(lowercaseKeyword);
   const sourceText = textSource.rawText;
   const sourceLength = sourceText.length;
   
