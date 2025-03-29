@@ -141,13 +141,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Rye&family=Special+Elite&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Fredericka+the+Great&display=swap" rel="stylesheet">
 </svelte:head>
 
-<main class="min-h-screen bg-zinc-900 text-zinc-300 font-serif relative">
+<main class="min-h-screen bg-zinc-900 text-silver-400 relative">
   <!-- Paper texture background with subtle warm tone -->
   <div class="absolute inset-0 bg-zinc-900 opacity-90 z-0 paper-texture"></div>
 
-  <!-- Pentagram background element -->
+  <!-- Logo background element -->
   <div class="absolute inset-0 flex items-center justify-center z-0 opacity-5">
-    <div class="w-[800px] h-[800px] pentagram"></div>
+    <div class="w-[800px] h-[800px] logo-background"></div>
   </div>
 
   <!-- Header with Wild West styling -->
@@ -178,16 +178,15 @@
             <span class="font-semibold">Out-of-Character Note:</span> This is a utility to help you encode and decode messages using the book cipher. Using this tool does not mean your character knows how to work with the cipher - it simply makes the process easier than doing it manually.
           </p>
         </div>
-      </div>
     </header>
   </div>
 
   <!-- Main Content -->
   <div class="container mx-auto px-4 py-8 relative z-10">
     <!-- Cipher Tool Section -->
-    <section class="mb-12 max-w-5xl mx-auto">
-      <div class="bg-zinc-800 border-4 border-double border-silver-700 rounded-none shadow-xl overflow-hidden wanted-poster-container">
-        <div class="p-6 border-b-2 border-silver-700 bg-zinc-800/80">
+    <section class="mb-12 max-w-5xl mx-auto relative">
+      <div class="border-4 border-double border-silver-700 rounded-none shadow-xl overflow-hidden wanted-poster-container relative z-10 bg-zinc-800/30">
+        <div class="p-6 border-b-2 border-silver-700">
           <h2 class="text-2xl font-bold text-center font-display tracking-wider text-silver-400 drop-shadow-sm">CIPHER UTILITY</h2>
           <div class="flex justify-center items-center mt-2">
             <div class="h-px w-12 bg-gradient-to-r from-transparent to-silver-500/80"></div>
@@ -225,7 +224,7 @@
           </div>
 
           <!-- Book and Keyword Selection -->
-          <div class="p-6 bg-zinc-800/90">
+          <div class="p-6 bg-transparent">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <div>
                 <label for="book-select" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Select Source Text</label>
@@ -343,7 +342,7 @@
 
             <!-- Encode/Decode Content -->
             {#if activeTab === 'encode'}
-              <div>
+              <div class="p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>
                     <label for="input-text" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Content to Encode</label>
@@ -376,7 +375,7 @@
               </div>
             {:else}
               <!-- Decode Section -->
-              <div>
+              <div class="p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>
                     <label for="encoded-input" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Encoded Message</label>
@@ -520,13 +519,28 @@
     filter: sepia(35%) brightness(0.85);
   }
 
+  /* Logo background */
+  .logo-background {
+    width: 100%;
+    height: 100%;
+    max-width: 800px;
+    max-height: 800px;
+    background-image: url('/images/logo.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: invert(75%) sepia(40%) saturate(500%) hue-rotate(5deg) brightness(110%) contrast(100%);
+    mix-blend-mode: multiply;
+    opacity: 1;
+  }
+
   /* Pentagram background */
-  .pentagram {
+  /* .pentagram {
     position: relative;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M50 2 L50 98 M2 50 L98 50 M26 26 L74 74 M26 74 L74 26 M33 15 L67 85 M15 33 L85 67 M15 67 L85 33 M33 85 L67 15'/%3E%3Ccircle cx='50' cy='50' r='45' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M50 5 L61 40 L97 40 L68 60 L79 95 L50 75 L21 95 L32 60 L3 40 L39 40 Z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
     background-size: contain;
     background-repeat: no-repeat;
-  }
+  } */
 
   /* Western text styling */
   .western-text {
@@ -552,61 +566,6 @@
     z-index: -1;
   }
 
-  /* Wanted poster styling with burnt paper tones */
-  .wanted-poster {
-    position: relative;
-    padding: 1.5rem;
-    background-color: rgba(165, 142, 119, 0.04);
-    box-shadow: 
-      inset 0 0 30px rgba(137, 108, 78, 0.05),
-      0 0 10px rgba(0,0,0,0.2);
-    border: 8px solid transparent;
-    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='75' height='75' viewBox='0 0 75 75'%3E%3Cpath fill='none' stroke='%238f7747' stroke-width='1' d='M0,0 L75,0 L75,75 L0,75 L0,0 Z M15,15 L60,15 L60,60 L15,60 L15,15 Z'/%3E%3C/svg%3E") 25 stretch;
-  }
-
-  .wanted-poster::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border: 2px solid rgba(143, 119, 71, 0.2);
-    pointer-events: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23a58e77' fill-opacity='0.03' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
-  }
-
-  .wanted-poster::after {
-    content: '';
-    position: absolute;
-    bottom: 5px;
-    right: 10px;
-    font-family: 'Fredericka the Great', serif;
-    font-size: 0.65rem;
-    color: rgba(143, 119, 71, 0.4);
-    letter-spacing: 0.1em;
-    transform: rotate(-2deg);
-  }
-
-  .wanted-poster-container {
-    position: relative;
-  }
-
-  .wanted-poster-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-      linear-gradient(rgba(165, 142, 119, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(165, 142, 119, 0.03) 1px, transparent 1px);
-    background-size: 20px 20px;
-    pointer-events: none;
-    z-index: 1;
-  }
-
   /* Occult badge styling with brass accents */
   .occult-badge {
     position: relative;
@@ -619,6 +578,7 @@
     height: 32px;
     background-color: rgba(143, 119, 71, 0.15);
     transform: rotate(45deg);
+    opacity: 0.8;
     z-index: -1;
   }
 
@@ -627,7 +587,7 @@
     position: absolute;
     width: 30px;
     height: 30px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='1' d='M50 5 L61 40 L97 40 L68 60 L79 95 L50 75 L21 95 L32 60 L3 40 L39 40 Z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='1' d='M50 2 L50 98 M2 50 L98 50 M26 26 L74 74 M26 74 L74 26 M33 15 L67 85 M15 33 L85 67 M15 67 L85 33 M33 85 L67 15'/%3E%3C/svg%3E");
     background-size: contain;
     background-repeat: no-repeat;
     opacity: 0.4;
@@ -802,32 +762,59 @@
     border-color: rgba(137, 108, 78, 0.4);
   }
 
-  /* Remove unused hr selector */
-  /* Western-style decorative dividers - not used */
-  /* hr {
-    border: 0;
-    height: 1px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='4' viewBox='0 0 200 4'%3E%3Cpath fill='none' stroke='%238f7747' stroke-width='1' stroke-dasharray='8 4' d='M0,2 L200,2'/%3E%3C/svg%3E");
-    margin: 1.5rem 0;
-    opacity: 0.5;
-  } */
+  /* Restore wanted poster styling and properly implement transparency for the cipher utility section */
+  .wanted-poster {
+    position: relative;
+    padding: 1.5rem;
+    background-color: rgba(165, 142, 119, 0.04);
+    box-shadow: 
+      inset 0 0 30px rgba(137, 108, 78, 0.05),
+      0 0 10px rgba(0,0,0,0.2);
+    border: 8px solid transparent;
+    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='75' height='75' viewBox='0 0 75 75'%3E%3Cpath fill='none' stroke='%238f7747' stroke-width='1' d='M0,0 L75,0 L75,75 L0,75 L0,0 Z M15,15 L60,15 L60,60 L15,60 L15,15 Z'/%3E%3C/svg%3E") 25 stretch;
+  }
 
-  /* Add weathered edges to the page */
-  main::after {
+  .wanted-poster::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
+    border: 2px solid rgba(143, 119, 71, 0.2);
     pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23a58e77' fill-opacity='0.03' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
+  }
+
+  .wanted-poster::after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    font-family: 'Fredericka the Great', serif;
+    font-size: 0.65rem;
+    color: rgba(143, 119, 71, 0.4);
+    letter-spacing: 0.1em;
+    transform: rotate(-2deg);
+  }
+
+  .wanted-poster-container {
+    position: relative;
+  }
+
+  .wanted-poster-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-image: 
-      radial-gradient(circle at 15% 0%, rgba(137, 108, 78, 0.1) 0%, transparent 25%),
-      radial-gradient(circle at 85% 0%, rgba(137, 108, 78, 0.1) 0%, transparent 25%),
-      radial-gradient(circle at 15% 100%, rgba(137, 108, 78, 0.1) 0%, transparent 25%),
-      radial-gradient(circle at 85% 100%, rgba(137, 108, 78, 0.1) 0%, transparent 25%),
-      radial-gradient(circle at 0% 50%, rgba(137, 108, 78, 0.1) 0%, transparent 25%),
-      radial-gradient(circle at 100% 50%, rgba(137, 108, 78, 0.1) 0%, transparent 25%);
+      linear-gradient(rgba(165, 142, 119, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(165, 142, 119, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+    z-index: 1;
   }
 
   /* Occult background elements for header */
@@ -857,7 +844,7 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='none' stroke='%238f7747' stroke-width='0.4' d='M12 10 C5 10 3 12 3 12 C3 12 5 17 12 17 C19 17 21 12 21 12 C21 12 19 7 12 7 Z'/%3E%3Cpath fill='none' stroke='%238f7747' stroke-width='0.4' d='M30 30 L70 70 M30 70 L70 30 M40 20 L60 80 M20 40 L80 60 M20 60 L80 40 M40 80 L60 20'/%3E%3C/svg%3E");
     background-size: contain;
     background-repeat: no-repeat;
-    opacity: 0.2;
+    opacity: 0.1;
     animation: slow-spin 60s linear infinite;
   }
 
@@ -1059,4 +1046,18 @@
   .eye-geometry {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='none' stroke='%23c0c0d0' stroke-width='0.4'/%3E%3Cpath fill='none' stroke='%23c0c0d0' stroke-width='0.4' d='M16 1v30M1 16h30M8 8L24 24M8 24L24 8'/%3E%3C/svg%3E");
   }
+  
+  /* Add a transparent background to all content sections */
+  /* Removing these rules as they're preventing background colors from working */
+  /* .p-6 {
+    background-color: transparent !important;
+  }
+  
+  .bg-zinc-800 {
+    background-color: transparent !important;
+  }
+  
+  .bg-zinc-800\/90, .bg-zinc-800\/80, .bg-zinc-800\/70, .bg-zinc-800\/60, .bg-zinc-800\/50 {
+    background-color: transparent !important;
+  } */
 </style>
