@@ -139,6 +139,10 @@
   <title>Archivon | Cipher Utility</title>
   <meta name="description" content="A utility for encoding and decoding messages with the Archivon book cipher" />
   <link href="https://fonts.googleapis.com/css2?family=Rye&family=Special+Elite&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Fredericka+the+Great&display=swap" rel="stylesheet">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon-96x96.png" type="image/png" sizes="96x96">
+  <link rel="apple-touch-icon" href="/favicon-96x96.png">
 </svelte:head>
 
 <main class="min-h-screen bg-zinc-900 text-silver-400 relative">
