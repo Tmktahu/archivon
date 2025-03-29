@@ -192,9 +192,34 @@
           <div class="flex justify-center items-center mt-2">
             <div class="h-px w-12 bg-gradient-to-r from-transparent to-silver-500/80"></div>
             <div class="flex items-center gap-4 mx-4">
-              <div class="occult-symbol-eye"></div>
-              <div class="occult-symbol-small"></div>
-              <div class="occult-symbol-cipher"></div>
+              <!-- Eye SVG with occult background (vertical orientation) -->
+              <div class="occult-icon-wrapper">
+                <div class="occult-geometry eye-geometry"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9b17c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-70 relative z-10" style="transform: rotate(90deg);">
+                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </div>
+              
+              <!-- Pen SVG with occult background -->
+              <div class="occult-icon-wrapper">
+                <div class="occult-geometry pen-geometry"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9b17c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-70 relative z-10">
+                  <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                  <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                  <path d="M2 2l7.586 7.586"></path>
+                  <circle cx="11" cy="11" r="2"></circle>
+                </svg>
+              </div>
+              
+              <!-- Lock SVG with occult background -->
+              <div class="occult-icon-wrapper">
+                <div class="occult-geometry lock-geometry"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9b17c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-70 relative z-10">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </div>
             </div>
             <div class="h-px w-12 bg-gradient-to-l from-transparent to-silver-500/80"></div>
           </div>
@@ -396,9 +421,37 @@
       <div class="flex justify-center items-center mb-4">
         <div class="h-px w-12 bg-gradient-to-r from-transparent to-silver-500/60"></div>
         <div class="flex items-center gap-4 mx-4">
-          <div class="occult-symbol-moon"></div>
-          <div class="occult-symbol-small"></div>
-          <div class="occult-symbol-sun"></div>
+          <!-- Moon SVG -->
+          <div class="occult-icon-wrapper">
+            <div class="occult-geometry moon-geometry"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9b17c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-70 relative z-10">
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+            </svg>
+          </div>
+          
+          <!-- Star SVG -->
+          <div class="occult-icon-wrapper">
+            <div class="occult-geometry star-geometry"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9b17c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-70 relative z-10">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </div>
+          
+          <!-- Sun SVG -->
+          <div class="occult-icon-wrapper">
+            <div class="occult-geometry sun-geometry"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9b17c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-70 relative z-10">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </div>
         </div>
         <div class="h-px w-12 bg-gradient-to-l from-transparent to-silver-500/60"></div>
       </div>
@@ -827,7 +880,7 @@
   .occult-symbol-small {
     width: 24px;
     height: 24px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M12 2 L14 9 L21 9 L15 14 L17 21 L12 17 L7 21 L9 14 L3 9 L10 9 Z'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.3' d='M12 6 L12 18 M6 12 L18 12 M8 8 L16 16 M8 16 L16 8'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M12 2 L14 9 L21 9 L15 14 L17 21 L12 17 L7 21 L9 14 L3 9 L10 9 Z'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.3' d='M12 6 L12 18 M6 12 L18 12 M8 8L16 16 M8 16L16 8'/%3E%3C/svg%3E");
     background-size: contain;
     background-repeat: no-repeat;
     opacity: 0.7;
@@ -957,5 +1010,54 @@
   @keyframes rune-rotate {
     0% { transform: rotate(var(--rune-rotation)); }
     100% { transform: rotate(calc(var(--rune-rotation) + 180deg)); }
+  }
+  
+  /* Occult icon styling */
+  .occult-icon-wrapper {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .occult-geometry {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    opacity: 0.4;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .moon-geometry {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='none' stroke='%23c0c0d0' stroke-width='0.4'/%3E%3Cpath fill='none' stroke='%23c0c0d0' stroke-width='0.4' d='M16 1v30M1 16h30M8 8L24 24M8 24L24 8'/%3E%3C/svg%3E");
+  }
+
+  .star-geometry {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='none' stroke='%23c0c0d0' stroke-width='0.4'/%3E%3Cpath fill='none' stroke='%23c0c0d0' stroke-width='0.4' d='M16 1L19 16 16 31M1 16L16 13 31 16M4 4L16 16 28 28M4 28L16 16 28 4'/%3E%3C/svg%3E");
+  }
+
+  .sun-geometry {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='none' stroke='%23c0c0d0' stroke-width='0.4'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23c0c0d0' stroke-width='0.4'/%3E%3Cpath fill='none' stroke='%23c0c0d0' stroke-width='0.4' d='M16 1v30M1 16h30M8 8L24 24M8 24L24 8'/%3E%3C/svg%3E");
+  }
+  
+  /* Additional occult geometry patterns */
+  .info-geometry {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='none' stroke='%23c0c0d0' stroke-width='0.4'/%3E%3Cpath fill='none' stroke='%23c0c0d0' stroke-width='0.4' d='M16 1v30M1 16h30M8 8L24 24M8 24L24 8'/%3E%3C/svg%3E");
+  }
+
+  .pen-geometry {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='none' stroke='%23c0c0d0' stroke-width='0.4'/%3E%3Cpath fill='none' stroke='%23c0c0d0' stroke-width='0.4' d='M16 1L19 16 16 31M1 16L16 13 31 16M4 4L16 16 28 28M4 28L16 16 28 4'/%3E%3C/svg%3E");
+  }
+
+  .lock-geometry {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='none' stroke='%23c0c0d0' stroke-width='0.4'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23c0c0d0' stroke-width='0.4'/%3E%3Cpath fill='none' stroke='%23c0c0d0' stroke-width='0.4' d='M16 1v30M1 16h30M8 8L24 24M8 24L24 8'/%3E%3C/svg%3E");
+  }
+
+  .eye-geometry {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='none' stroke='%23c0c0d0' stroke-width='0.4'/%3E%3Cpath fill='none' stroke='%23c0c0d0' stroke-width='0.4' d='M16 1v30M1 16h30M8 8L24 24M8 24L24 8'/%3E%3C/svg%3E");
   }
 </style>
