@@ -320,7 +320,7 @@
             </div>
 
             <!-- Tabs for Encode/Decode -->
-            <div class="mb-6 border-b-2 border-silver-700/30">
+            <div class="mb-6 border-b-2 border-zinc-600">
               <div class="flex">
                 <button 
                   class={`py-3 px-6 font-semibold uppercase text-sm tracking-wider ${activeTab === 'encode' ? 'border-b-2 border-silver-400 text-silver-300 bg-zinc-700/50' : 'text-silver-400/80 hover:text-silver-300 hover:bg-zinc-700/30'}`}
@@ -457,7 +457,6 @@
       </div>
       
       <p class="mb-2 text-xs typewriter text-silver-400/70">For Knowledge. For Protection. For Understanding.</p>
-      <p class="text-xs typewriter text-silver-400/70">Use this utility to encode sensitive information before sending it to the Order.</p>
     </div>
   </footer>
 </main>
