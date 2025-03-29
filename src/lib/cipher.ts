@@ -37,17 +37,103 @@ export function generateSeedFromKeyword(keyword: string): number {
 }
 
 /**
- * Latin and Greek alphabets for encoding
+ * Combined Russian (Cyrillic) and Greek alphabet for encoding
+ * This provides a larger character set for tuple-based encoding
  */
-const LATIN_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const GREEK_ALPHABET = 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ';
+const COMBINED_ALPHABET = 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюяΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψω';
+
+/**
+ * Special character to indicate fallback encoding
+ * This character must not be in the COMBINED_ALPHABET
+ */
+const FALLBACK_INDICATOR = '⁂'; // Triple asterisk symbol, very uncommon
+
+/**
+ * Fallback map for characters not found in the source text
+ * Each Latin character maps to a unique fallback encoding
+ */
+const FALLBACK_MAP: Record<string, string> = {};
+
+// Initialize the fallback map for all Latin characters
+function initializeFallbackMap() {
+  const latinChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  
+  for (let i = 0; i < latinChars.length; i++) {
+    const char = latinChars[i];
+    // Create a unique fallback encoding for each character
+    // Using the fallback indicator followed by a character from the combined alphabet
+    FALLBACK_MAP[char] = FALLBACK_INDICATOR + COMBINED_ALPHABET[i % COMBINED_ALPHABET.length];
+  }
+}
+
+// Initialize the fallback map
+initializeFallbackMap();
+
+/**
+ * Converts a number to a tuple of characters from the combined alphabet
+ * @param num Number to convert
+ * @returns Tuple of two characters
+ */
+function numberToTuple(num: number): string {
+  const alphabetLength = COMBINED_ALPHABET.length;
+  const first = num % alphabetLength;
+  const second = Math.floor(num / alphabetLength) % alphabetLength;
+  
+  return COMBINED_ALPHABET[first] + COMBINED_ALPHABET[second];
+}
+
+/**
+ * Converts a tuple of characters back to a number
+ * @param tuple Tuple of two characters
+ * @returns Original number
+ */
+function tupleToNumber(tuple: string): number {
+  const alphabetLength = COMBINED_ALPHABET.length;
+  const first = COMBINED_ALPHABET.indexOf(tuple[0]);
+  const second = COMBINED_ALPHABET.indexOf(tuple[1]);
+  
+  if (first === -1 || second === -1) {
+    return -1; // Invalid tuple
+  }
+  
+  return first + (second * alphabetLength);
+}
+
+/**
+ * Checks if a string is a fallback encoding
+ * @param str String to check
+ * @returns True if the string is a fallback encoding
+ */
+function isFallbackEncoding(str: string): boolean {
+  return str.startsWith(FALLBACK_INDICATOR);
+}
+
+/**
+ * Gets the original character from a fallback encoding
+ * @param fallbackEncoding Fallback encoding string
+ * @returns Original character or null if not a valid fallback
+ */
+function getCharacterFromFallback(fallbackEncoding: string): string | null {
+  if (!isFallbackEncoding(fallbackEncoding)) {
+    return null;
+  }
+  
+  // Find the character that maps to this fallback encoding
+  for (const [char, encoding] of Object.entries(FALLBACK_MAP)) {
+    if (encoding === fallbackEncoding) {
+      return char;
+    }
+  }
+  
+  return null;
+}
 
 /**
  * Encodes a message using character indices with keyword offset
  * @param message Message to encode
  * @param textSource Text source with raw text
  * @param keyword Keyword for offset
- * @returns Encoded message as a mixture of Greek and Latin letters
+ * @returns Encoded message with character tuples
  */
 export function encodeMessage(message: string, textSource: TextSource, keyword: string): string {
   if (!message || !keyword || !textSource.rawText) return '';
@@ -56,44 +142,44 @@ export function encodeMessage(message: string, textSource: TextSource, keyword: 
   const sourceText = textSource.rawText;
   const sourceLength = sourceText.length;
   
-  // Normalize input text (lowercase only)
-  const normalizedInput = message.toLowerCase();
-  
   let result = '';
   
   // Encode each character
-  for (const char of normalizedInput) {
-    if (char === ' ') {
-      // Keep spaces as spaces
-      result += ' ';
+  for (const char of message) {
+    // Keep spaces and punctuation as is
+    if (char === ' ' || !/[a-zA-Z]/.test(char)) {
+      result += char;
       continue;
     }
     
-    // Find the character in the source text (with offset)
+    // Find the exact character (case sensitive) in the source text
     let startPos = seed % sourceLength;
     let found = false;
     let foundIndex = -1;
     
-    // Search through the entire source text starting from the offset position
+    // First try to find the exact character (case sensitive)
     for (let i = 0; i < sourceLength; i++) {
       const pos = (startPos + i) % sourceLength;
-      if (sourceText[pos].toLowerCase() === char.toLowerCase()) {
+      if (sourceText[pos] === char) {
         foundIndex = pos;
         found = true;
         break;
       }
     }
     
-    if (found) {
-      // Convert the index to a Greek or Latin letter
-      const useGreek = foundIndex % 2 === 0;
-      const alphabet = useGreek ? GREEK_ALPHABET : LATIN_ALPHABET;
-      const position = foundIndex % alphabet.length;
-      
-      result += alphabet[position];
+    // If not found with exact case, use the fallback
+    if (!found) {
+      // Use the fallback encoding for this character
+      const fallbackEncoding = FALLBACK_MAP[char];
+      if (fallbackEncoding) {
+        result += fallbackEncoding;
+      } else {
+        // If no fallback available, keep the character as is
+        result += char;
+      }
     } else {
-      // If character not found, use a fallback character
-      result += '?';
+      // Convert the index to a tuple of characters
+      result += numberToTuple(foundIndex);
     }
   }
   
@@ -102,7 +188,7 @@ export function encodeMessage(message: string, textSource: TextSource, keyword: 
 
 /**
  * Decodes a message that was encoded with the character index cipher
- * @param encodedMessage Encoded message (mixture of Greek and Latin letters)
+ * @param encodedMessage Encoded message with character tuples
  * @param textSource Text source with raw text
  * @param keyword Keyword used for encoding
  * @returns Decoded message
@@ -115,66 +201,53 @@ export function decodeMessage(encodedMessage: string, textSource: TextSource, ke
   const sourceLength = sourceText.length;
   
   let result = '';
+  let i = 0;
   
   // Process each character in the encoded message
-  for (const char of encodedMessage) {
-    if (char === ' ') {
-      // Keep spaces as spaces
-      result += ' ';
-      continue;
-    }
+  while (i < encodedMessage.length) {
+    const char = encodedMessage[i];
     
-    if (char === '?') {
-      // Handle fallback character
-      result += '?';
-      continue;
-    }
-    
-    // Determine which alphabet the character belongs to
-    const isGreek = GREEK_ALPHABET.includes(char);
-    const isLatin = LATIN_ALPHABET.includes(char);
-    
-    if (!isGreek && !isLatin) {
-      // If not a recognized character, keep it unchanged
+    // Keep spaces and punctuation as is
+    if (char === ' ' || !/[a-zA-ZА-Яа-яΑ-Ωα-ω⁂]/.test(char)) {
       result += char;
+      i++;
       continue;
     }
     
-    // Find the position in the appropriate alphabet
-    const alphabet = isGreek ? GREEK_ALPHABET : LATIN_ALPHABET;
-    const position = alphabet.indexOf(char);
-    
-    // Calculate possible indices in the source text
-    const possibleIndices = [];
-    for (let i = 0; i < sourceLength; i++) {
-      if (i % alphabet.length === position && i % 2 === (isGreek ? 0 : 1)) {
-        possibleIndices.push(i);
-      }
-    }
-    
-    // Find the correct index based on the seed
-    const startPos = seed % sourceLength;
-    let closestIndex = -1;
-    let minDistance = sourceLength;
-    
-    for (const index of possibleIndices) {
-      // Calculate circular distance from the start position
-      const distance = (index >= startPos) 
-        ? index - startPos 
-        : sourceLength - startPos + index;
+    // Check if this is a fallback encoding
+    if (char === FALLBACK_INDICATOR && i + 1 < encodedMessage.length) {
+      const fallbackEncoding = encodedMessage.substring(i, i + 2);
+      const originalChar = getCharacterFromFallback(fallbackEncoding);
       
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestIndex = index;
+      if (originalChar) {
+        result += originalChar;
+        i += 2; // Move past the fallback encoding
+      } else {
+        // If not a valid fallback, keep the character as is
+        result += char;
+        i++;
       }
+      continue;
     }
     
-    // Get the character at the closest index
-    if (closestIndex >= 0 && closestIndex < sourceLength) {
-      result += sourceText[closestIndex].toLowerCase();
+    // Check if we have enough characters for a tuple
+    if (i + 1 < encodedMessage.length) {
+      const tuple = encodedMessage.substring(i, i + 2);
+      const index = tupleToNumber(tuple);
+      
+      if (index >= 0 && index < sourceLength) {
+        // Get the exact character at the index (preserving case)
+        result += sourceText[index];
+        i += 2; // Move past the tuple
+      } else {
+        // If not a valid tuple, keep the character as is
+        result += char;
+        i++;
+      }
     } else {
-      // Fallback if no valid index found
-      result += '?';
+      // Not enough characters left for a tuple
+      result += char;
+      i++;
     }
   }
   

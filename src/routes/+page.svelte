@@ -18,6 +18,30 @@
   let isDropdownOpen = false;
   let selectedBookName = '';
   
+  // Computed values for occult visualization
+  $: keywordSeed = keyword ? cipher.generateSeedFromKeyword(keyword) : 0;
+  $: keywordLength = keyword ? keyword.length : 0;
+  $: keywordHue = keywordSeed % 360; // Use the seed to determine a color hue
+  $: keywordBrightness = Math.min(100, 40 + (keywordSeed % 60)); // Brightness based on seed
+  
+  // Function to get occult symbol for a digit
+  function getOccultSymbolForDigit(digit) {
+    // Each digit gets a unique SVG path representing an occult symbol
+    const symbols = [
+      `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="1"/><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="0.5"/></svg>`, // 0
+      `<svg viewBox="0 0 24 24"><line x1="12" y1="4" x2="12" y2="20" stroke="currentColor" stroke-width="1"/><line x1="8" y1="8" x2="16" y2="16" stroke="currentColor" stroke-width="0.5"/><line x1="16" y1="8" x2="8" y2="16" stroke="currentColor" stroke-width="0.5"/></svg>`, // 1
+      `<svg viewBox="0 0 24 24"><path d="M6,12 L18,12 L12,5 Z" fill="none" stroke="currentColor" stroke-width="1"/><path d="M6,12 L18,12 L12,19 Z" fill="none" stroke="currentColor" stroke-width="0.5"/></svg>`, // 2
+      `<svg viewBox="0 0 24 24"><path d="M12,4 L20,12 L12,20 L4,12 Z" fill="none" stroke="currentColor" stroke-width="1"/></svg>`, // 3
+      `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1"/><line x1="12" y1="4" x2="12" y2="20" stroke="currentColor" stroke-width="0.5"/><line x1="4" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="0.5"/></svg>`, // 4
+      `<svg viewBox="0 0 24 24"><path d="M8,8 L16,8 L16,16 L8,16 Z" fill="none" stroke="currentColor" stroke-width="1"/><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="0.5"/></svg>`, // 5
+      `<svg viewBox="0 0 24 24"><path d="M12,5 L17,12 L12,19 L7,12 Z" fill="none" stroke="currentColor" stroke-width="1"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="0.5"/></svg>`, // 6
+      `<svg viewBox="0 0 24 24"><line x1="4" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="1"/><line x1="4" y1="20" x2="20" y2="4" stroke="currentColor" stroke-width="1"/><circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="0.5"/></svg>`, // 7
+      `<svg viewBox="0 0 24 24"><path d="M12,4 L16,8 L16,16 L8,16 L8,8 Z" fill="none" stroke="currentColor" stroke-width="1"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="0.5"/></svg>`, // 8
+      `<svg viewBox="0 0 24 24"><path d="M8,8 L16,8 L16,16 L8,16 Z" fill="none" stroke="currentColor" stroke-width="1"/><path d="M6,6 L18,6 L18,18 L6,18 Z" fill="none" stroke="currentColor" stroke-width="0.5"/><line x1="12" y1="6" x2="12" y2="18" stroke="currentColor" stroke-width="0.5"/></svg>` // 9
+    ];
+    return symbols[parseInt(digit)];
+  }
+  
   // Toggle dropdown
   function toggleDropdown() {
     isDropdownOpen = !isDropdownOpen;
@@ -34,7 +58,7 @@
   // Select a book
   function selectBook(book) {
     selectedBook = book.id;
-    selectedBookName = `${book.name} (${book.author})`;
+    selectedBookName = book.name;
     isDropdownOpen = false;
     
     // Add has-value class to the dropdown button when it has a value
@@ -169,7 +193,7 @@
             <div class="h-px w-12 bg-gradient-to-r from-transparent to-silver-500/80"></div>
             <div class="flex items-center gap-4 mx-4">
               <div class="occult-symbol-eye"></div>
-              <div class="occult-symbol-letter"></div>
+              <div class="occult-symbol-small"></div>
               <div class="occult-symbol-cipher"></div>
             </div>
             <div class="h-px w-12 bg-gradient-to-l from-transparent to-silver-500/80"></div>
@@ -201,7 +225,7 @@
                           on:click={() => selectBook(book)}
                           on:keydown={(e) => e.key === 'Enter' && selectBook(book)}
                         >
-                          {book.name} ({book.author})
+                          {book.name}
                         </button>
                       {/each}
                     </div>
@@ -212,7 +236,7 @@
                 <select id="book-select" bind:value={selectedBook} class="hidden">
                   <option value="" disabled>Choose a source text...</option>
                   {#each AVAILABLE_BOOKS as book}
-                    <option value={book.id}>{book.name} ({book.author})</option>
+                    <option value={book.id}>{book.name}</option>
                   {/each}
                 </select>
                 
@@ -221,12 +245,15 @@
                 {/if}
                 {#if parsedBook}
                   <p class="mt-2 text-silver-400/80 text-sm">
-                    <span class="font-semibold text-silver-300">Source text loaded</span> and ready for encoding
+                    <span class="font-semibold text-silver-300">Source text loaded</span> and ready for encoding.
                   </p>
                 {/if}
                 {#if selectedBook}
                   {#if !isLoading}
                     {#if parsedBook}
+                      <p class="mt-2 text-silver-400/80 text-sm">
+                        <span class="font-semibold text-silver-300">Author:</span> {AVAILABLE_BOOKS.find(b => b.id === selectedBook)?.author}
+                      </p>
                       {#if AVAILABLE_BOOKS.find(b => b.id === selectedBook)?.description}
                         <p class="mt-2 text-silver-400/80 text-sm italic">
                           {AVAILABLE_BOOKS.find(b => b.id === selectedBook)?.description}
@@ -246,9 +273,22 @@
                   class="w-full bg-zinc-900/80 border-2 border-silver-700 rounded-none px-4 py-3 text-silver-300 focus:outline-none focus:ring-2 focus:ring-silver-500 font-mono text-sm h-[50px]"
                 />
                 {#if keyword}
-                  <p class="mt-2 text-silver-400/80 text-sm">
-                    Numeric value: <span class="font-semibold text-silver-300">{cipher.generateSeedFromKeyword(keyword)}</span>
-                  </p>
+                  <div class="mt-2">
+                    <!-- Occult symbols representing the numeric value -->
+                    <div class="mb-2">
+                      <div class="grid grid-cols-5 w-full gap-1">
+                        {#each String(keywordSeed).padStart(5, '0').split('') as digit, i}
+                          <div class="occult-rune aspect-square flex items-center justify-center"
+                               style="--rune-color: hsla({keywordHue + i * 30}, 70%, {keywordBrightness}%, 0.7); --rune-delay: {i * 0.2}s; --rune-rotation: {(parseInt(digit) * 36) % 360}deg;">
+                            <div class="rune-svg-container" style="transform: rotate(var(--rune-rotation));">
+                              {@html getOccultSymbolForDigit(digit)}
+                            </div>
+                          </div>
+                        {/each}
+                      </div>
+                      <div class="mt-1 h-[3px] bg-gradient-to-r from-transparent via-[hsla({keywordHue},70%,{keywordBrightness}%,0.5)] to-transparent"></div>
+                    </div>
+                  </div>
                 {/if}
               </div>
             </div>
@@ -840,7 +880,7 @@
   .occult-symbol-sun {
     width: 24px;
     height: 24px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Ccircle cx='12' cy='12' r='4' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M12 4 L12 8 M12 16 L12 20 M4 12 L8 12 M16 12 L20 12 M6.34 6.34 L9.17 9.17 M14.83 14.83 L17.66 17.66 M6.34 17.66 L9.17 14.83 M14.83 9.17 L17.66 6.34'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Ccircle cx='12' cy='12' r='4' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M12 4 L20 12 L12 20 L4 12 Z'/%3E%3C/svg%3E");
     background-size: contain;
     background-repeat: no-repeat;
     opacity: 0.7;
@@ -855,128 +895,66 @@
     opacity: 0.7;
   }
   
-  /* Remove unused occult dots styles */
-  .occult-dots,
-  .occult-dots-small,
-  .occult-dots-tiny,
-  .occult-dots-large {
-    display: none;
-  }
-
-  /* Custom select styling */
-  .custom-select {
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23c9b17c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 16px;
-    background-color: rgba(24, 24, 27, 0.8); /* Match input background */
-    font-family: 'Special Elite', monospace !important; /* Ensure Special Elite font is used */
-    letter-spacing: normal;
-    line-height: 1.5;
-    font-size: 0.875rem;
-    font-weight: 400;
+  /* Occult cipher visualization */
+  .occult-sigil-container {
+    border: 1px solid rgba(137, 108, 78, 0.3);
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   }
   
-  /* Special Elite font class */
-  .special-elite-font {
-    font-family: 'Special Elite', monospace !important;
+  .sigil-background {
+    border-radius: 50%;
   }
   
-  /* Style placeholder text for the dropdown */
-  .custom-select:empty::before {
-    content: attr(placeholder);
-    color: rgba(161, 161, 170, 0.7); /* Match input placeholder color */
-  }
-  
-  /* Placeholder text color */
-  .placeholder-text-color {
-    color: rgba(161, 161, 170, 1.0); /* Match input placeholder color with opacity */
-  }
-  
-  /* Style for when dropdown has a selected value */
-  .custom-select.has-value {
-    color: var(--color-silver-300);
-    opacity: 1;
-  }
-  
-  /* Override default dropdown option styling */
-  :global(select option) {
-    background-color: rgb(63, 63, 70); /* zinc-700 */
-    color: rgb(212, 212, 216); /* silver-300 */
-  }
-  
-  :global(select option:hover),
-  :global(select option:focus),
-  :global(select option:active),
-  :global(select option:checked) {
-    background-color: rgba(205, 179, 128, 0.3) !important; /* brass-light with transparency */
-    color: rgb(205, 179, 128) !important; /* brass-light */
-  }
-  
-  /* For Firefox */
-  :global(select:focus) {
-    color: rgb(205, 179, 128); /* brass-light */
-    border-color: rgb(205, 179, 128); /* brass-light */
-  }
-  
-  /* For Webkit browsers */
-  :global(select option:hover) {
-    background-color: rgba(205, 179, 128, 0.3);
-  }
-  
-  /* Custom dropdown styling */
-  .custom-dropdown-menu {
-    max-height: 200px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-brass-mid) var(--color-silver-700);
-  }
-  
-  .custom-dropdown-menu::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  .custom-dropdown-menu::-webkit-scrollbar-track {
-    background: var(--color-silver-700);
-  }
-  
-  .custom-dropdown-menu::-webkit-scrollbar-thumb {
-    background-color: var(--color-brass-mid);
-  }
-  
-  /* Define brass background color for hover states */
-  .bg-brass-bg {
-    background-color: rgba(205, 179, 128, 0.2);
-  }
-  
-  .text-brass-light {
-    color: rgb(205, 179, 128);
-  }
-  
-  /* Ensure hover styles work properly */
-  .custom-dropdown-menu button:hover,
-  .custom-dropdown-menu button:focus {
-    background-color: rgba(205, 179, 128, 0.2);
-    color: rgb(205, 179, 128);
-    outline: none;
-  }
-  
-  .occult-symbol-quill {
-    width: 24px;
-    height: 24px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M8 18 L10 14 L18 6 C18 6 19 5 18 4 C17 3 16 4 16 4 L8 12 L6 14 L8 18 Z'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.3' d='M8 12 L12 8 M10 14 L14 10 M12 16 L16 12'/%3E%3C/svg%3E");
-    background-size: contain;
-    background-repeat: no-repeat;
+  .sigil-inner {
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    background-color: var(--sigil-color);
     opacity: 0.7;
+    animation: sigil-rotate 8s linear infinite;
   }
   
-  .occult-symbol-letter {
-    width: 24px;
-    height: 24px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M5 8 L19 8 L19 16 L5 16 Z'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M5 8 L12 13 L19 8'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.3' d='M12 13 L12 16 M8 12 L5 16 M16 12 L19 16'/%3E%3C/svg%3E");
-    background-size: contain;
-    background-repeat: no-repeat;
-    opacity: 0.7;
+  .sigil-outer {
+    background: transparent;
+    border: 1px solid var(--sigil-color);
+    border-radius: 50%;
+    animation: sigil-pulse 4s infinite alternate;
+  }
+  
+  @keyframes sigil-rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  @keyframes sigil-pulse {
+    0% { transform: scale(0.8); opacity: 0.3; }
+    100% { transform: scale(1.1); opacity: 0.7; }
+  }
+  
+  .occult-rune {
+    border: 1px solid var(--rune-color);
+    color: var(--rune-color);
+    animation: rune-pulse 3s infinite alternate;
+    animation-delay: var(--rune-delay);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .rune-svg-container {
+    width: 100%;
+    height: 100%;
+    animation: rune-rotate 10s linear infinite;
+    animation-delay: var(--rune-delay);
+    animation-direction: alternate;
+  }
+  
+  @keyframes rune-pulse {
+    0%, 70% { opacity: 0.7; border-color: var(--rune-color); }
+    20%, 100% { opacity: 1; border-color: hsla(0, 0%, 100%, 0.3); }
+  }
+  
+  @keyframes rune-rotate {
+    0% { transform: rotate(var(--rune-rotation)); }
+    100% { transform: rotate(calc(var(--rune-rotation) + 180deg)); }
   }
 </style>
