@@ -403,7 +403,7 @@
         <div class="h-px w-12 bg-gradient-to-l from-transparent to-silver-500/60"></div>
       </div>
       
-      <p class="mb-2 text-xs typewriter text-silver-400/70">"Through hidden words, truth reveals itself to those who seek"</p>
+      <p class="mb-2 text-xs typewriter text-silver-400/70">For Knowledge. For Protection. For Understanding.</p>
       <p class="text-xs typewriter text-silver-400/70">Use this utility to encode sensitive information before sending it to the Order.</p>
     </div>
   </footer>
