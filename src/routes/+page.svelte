@@ -10,132 +10,149 @@
   let inputText = '';
   let encodedText = '';
   let decodedText = '';
+  let activeTab = 'encode';
   let isLoading = false;
-  let bookContent = '';
   let parsedBook = null;
-  let activeTab = 'encode'; 
   
-  // Load book content from static files
-  async function loadBookContent(bookId) {
-    if (!bookId) return;
-    
-    const book = AVAILABLE_BOOKS.find(b => b.id === bookId);
-    if (!book) {
-      alert(`Book with ID "${bookId}" not found`);
-      return;
+  // Custom dropdown state
+  let isDropdownOpen = false;
+  let selectedBookName = '';
+  
+  // Toggle dropdown
+  function toggleDropdown() {
+    isDropdownOpen = !isDropdownOpen;
+  }
+  
+  // Close dropdown if clicked outside
+  function handleClickOutside(event) {
+    const dropdown = document.getElementById('custom-dropdown');
+    if (dropdown && !dropdown.contains(event.target)) {
+      isDropdownOpen = false;
     }
+  }
+  
+  // Select a book
+  function selectBook(book) {
+    selectedBook = book.id;
+    selectedBookName = `${book.name} (${book.author})`;
+    isDropdownOpen = false;
     
+    // Add has-value class to the dropdown button when it has a value
+    const dropdownButton = document.querySelector('.custom-select');
+    if (dropdownButton) {
+      dropdownButton.classList.add('has-value');
+    }
+  }
+
+  // Load book content when book selection changes
+  async function loadBookContent() {
+    if (!selectedBook) return;
+
     isLoading = true;
+
     try {
+      const book = AVAILABLE_BOOKS.find(b => b.id === selectedBook);
+      if (!book) throw new Error('Book not found');
+
       const response = await fetch(`/books/${book.filename}`);
-      if (!response.ok) {
-        throw new Error(`Failed to load book: ${response.statusText}`);
-      }
-      bookContent = await response.text();
-      parsedBook = cipher.parseBookContent(bookContent);
-      console.log(`Loaded book: ${book.name} (${bookContent.length} characters, ${parsedBook?.pages.length || 0} pages)`);
+      if (!response.ok) throw new Error('Failed to load book content');
+
+      const content = await response.text();
+      parsedBook = cipher.parseTextContent(content);
     } catch (error) {
       console.error('Error loading book:', error);
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      alert(`Failed to load book: ${errorMessage}`);
-      parsedBook = null;
+      alert('Failed to load book content. Please try again.');
     } finally {
       isLoading = false;
     }
   }
-  
-  // Watch for book selection changes
+
+  // Watch for changes to selectedBook
   $: if (selectedBook) {
-    loadBookContent(selectedBook);
+    loadBookContent();
   }
-  
-  // Encode a message using the book cipher
+
+  // Encode message
   function encodeMessage() {
-    if (!selectedBook || !keyword || !inputText) {
-      alert('Please select a book, enter a keyword, and provide text to encode');
-      return;
-    }
-    
-    if (!parsedBook) {
-      alert('Book content is not loaded yet. Please try again.');
-      return;
-    }
-    
+    if (!parsedBook || !keyword || !inputText) return;
+
     try {
       encodedText = cipher.encodeMessage(inputText, parsedBook, keyword);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      alert(`Error encoding message: ${errorMessage}`);
+      console.error('Error encoding message:', error);
+      alert('Failed to encode message. Please try again.');
     }
   }
-  
-  // Decode a message using the book cipher
+
+  // Decode message
   function decodeMessage() {
-    if (!selectedBook || !keyword || !encodedText) {
-      alert('Please select a book, enter a keyword, and provide text to decode');
-      return;
-    }
-    
-    if (!parsedBook) {
-      alert('Book content is not loaded yet. Please try again.');
-      return;
-    }
-    
+    if (!parsedBook || !keyword || !encodedText) return;
+
     try {
       decodedText = cipher.decodeMessage(encodedText, parsedBook, keyword);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      alert(`Error decoding message: ${errorMessage}`);
+      console.error('Error decoding message:', error);
+      alert('Failed to decode message. Please try again.');
     }
   }
-  
+
   function setActiveTab(tab) {
     activeTab = tab;
   }
-  
+
   onMount(() => {
-    // Any initialization code can go here
+    // Add click event listener to close dropdown when clicking outside
+    document.addEventListener('click', handleClickOutside);
+    
+    // Cleanup on component unmount
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
   });
 </script>
 
 <svelte:head>
-  <title>Archivon | Order of Records</title>
-  <meta name="description" content="A cipher system for encoding and preserving knowledge" />
-  <link href="https://fonts.googleapis.com/css2?family=Rye&family=Special+Elite&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <title>Archivon | Cipher Utility</title>
+  <meta name="description" content="A utility for encoding and decoding messages with the Archivon book cipher" />
+  <link href="https://fonts.googleapis.com/css2?family=Rye&family=Special+Elite&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Fredericka+the+Great&display=swap" rel="stylesheet">
 </svelte:head>
 
 <main class="min-h-screen bg-zinc-900 text-zinc-300 font-serif relative">
   <!-- Paper texture background with subtle warm tone -->
   <div class="absolute inset-0 bg-zinc-900 opacity-90 z-0 paper-texture"></div>
-  
+
   <!-- Pentagram background element -->
   <div class="absolute inset-0 flex items-center justify-center z-0 opacity-5">
     <div class="w-[800px] h-[800px] pentagram"></div>
   </div>
-  
+
   <!-- Header with Wild West styling -->
   <div class="relative z-10 border-b-4 border-double border-silver-700/70">
     <header class="container mx-auto px-4 py-8 text-center">
       <div class="relative">
         <div class="absolute inset-0 flex items-center justify-center">
-          <div class="w-32 h-32 rounded-full border-2 border-silver-500/40 opacity-20"></div>
-          <div class="w-48 h-48 rounded-full border-2 border-silver-500/40 opacity-15 absolute"></div>
-          <div class="w-64 h-64 rounded-full border-2 border-silver-500/40 opacity-10 absolute"></div>
+          <!-- Replacing concentric circles with occult symbols -->
+          <div class="occult-background">
+            <div class="occult-symbol-outer"></div>
+            <div class="occult-symbol-inner"></div>
+          </div>
         </div>
-        
+
         <div class="wanted-poster">
-          <h1 class="text-4xl md:text-6xl font-bold mb-2 font-display tracking-widest text-silver-400 relative z-10 drop-shadow-sm">
+          <h1 class="text-4xl md:text-6xl font-bold mb-2 font-display tracking-widest text-brass-light relative z-10 drop-shadow-sm western-text">
             ARCHIVON
           </h1>
           <div class="flex justify-center items-center gap-4 mt-4">
             <div class="h-px w-16 bg-gradient-to-r from-transparent to-silver-500/70"></div>
-            <p class="text-sm uppercase tracking-widest font-semibold text-silver-400/80">Order of Records • Est. 1872</p>
+            <p class="text-sm uppercase tracking-widest font-semibold text-silver-400/80">Order of Records</p>
             <div class="h-px w-16 bg-gradient-to-l from-transparent to-silver-500/70"></div>
           </div>
         </div>
-        
-        <div class="mt-4 occult-seal">
-          <span>CLASSIFIED</span>
+
+        <div class="mt-4 ooc-note">
+          <p class="text-sm text-silver-400/90 italic px-4 py-2 bg-zinc-800/80 border border-silver-700/50 max-w-2xl mx-auto">
+            <span class="font-semibold">Out-of-Character Note:</span> This is a utility to help you encode and decode messages using the book cipher. Using this tool does not mean your character knows how to work with the cipher - it simply makes the process easier than doing it manually.
+          </p>
         </div>
       </div>
     </header>
@@ -147,229 +164,184 @@
     <section class="mb-12 max-w-5xl mx-auto">
       <div class="bg-zinc-800 border-4 border-double border-silver-700 rounded-none shadow-xl overflow-hidden wanted-poster-container">
         <div class="p-6 border-b-2 border-silver-700 bg-zinc-800/80">
-          <h2 class="text-2xl font-bold text-center font-display tracking-wider text-silver-400 drop-shadow-sm">CIPHER PROTOCOL</h2>
-          <div class="flex justify-center mt-2">
-            <div class="flex items-center gap-3">
-              <div class="h-px w-12 bg-gradient-to-r from-transparent to-silver-500/80"></div>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-5 h-5 text-silver-400">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v.01M8.5 8.5l.01-.01M15.5 8.5l-.01-.01M12 12v.01M8.5 15.5l.01-.01M15.5 15.5l-.01-.01M12 20v.01" />
-              </svg>
-              <div class="h-px w-12 bg-gradient-to-l from-transparent to-silver-500/80"></div>
+          <h2 class="text-2xl font-bold text-center font-display tracking-wider text-silver-400 drop-shadow-sm">CIPHER UTILITY</h2>
+          <div class="flex justify-center items-center mt-2">
+            <div class="h-px w-12 bg-gradient-to-r from-transparent to-silver-500/80"></div>
+            <div class="flex items-center gap-4 mx-4">
+              <div class="occult-symbol-eye"></div>
+              <div class="occult-symbol-letter"></div>
+              <div class="occult-symbol-cipher"></div>
             </div>
+            <div class="h-px w-12 bg-gradient-to-l from-transparent to-silver-500/80"></div>
           </div>
-        
-        <!-- Book and Keyword Selection -->
-        <div class="p-6 bg-zinc-800/90">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div>
-              <label for="book-select" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Select Source Text</label>
-              <select 
-                id="book-select" 
-                bind:value={selectedBook}
-                class="w-full bg-zinc-700 border-2 border-silver-700 rounded-none px-4 py-3 text-zinc-300 focus:outline-none focus:ring-2 focus:ring-silver-500 font-serif h-[50px]"
-              >
-                <option value="" disabled>Choose a source text...</option>
-                {#each AVAILABLE_BOOKS as book}
-                  <option value={book.id}>{book.name} ({book.author})</option>
-                {/each}
-              </select>
-              {#if isLoading}
-                <p class="mt-2 text-silver-400/80 italic text-sm">Loading text from archives...</p>
-              {/if}
-              {#if parsedBook}
-                <p class="mt-2 text-silver-400/80 text-sm">
-                  <span class="font-semibold text-silver-300">{parsedBook.pages.length}</span> pages of documented knowledge
-                </p>
-              {/if}
-              {#if selectedBook}
-                {#if !isLoading}
-                  {#if parsedBook}
-                    {#if AVAILABLE_BOOKS.find(b => b.id === selectedBook)?.description}
-                      <p class="mt-2 text-silver-400/80 text-sm italic">
-                        {AVAILABLE_BOOKS.find(b => b.id === selectedBook)?.description}
-                      </p>
+
+          <!-- Book and Keyword Selection -->
+          <div class="p-6 bg-zinc-800/90">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div>
+                <label for="book-select" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Select Source Text</label>
+                
+                <!-- Custom dropdown -->
+                <div id="custom-dropdown" class="relative">
+                  <button 
+                    type="button"
+                    class="w-full bg-zinc-900/80 text-silver-300/80 placeholder-text-color border-2 border-silver-700 rounded-none px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-silver-500 font-mono text-sm h-[50px] text-left custom-select"
+                    on:click={toggleDropdown}
+                    style="font-family: 'Special Elite', monospace; font-weight: 400; letter-spacing: 0.5px;"
+                  >
+                    {selectedBookName || 'Choose a source text...'}
+                  </button>
+                  
+                  {#if isDropdownOpen}
+                    <div class="absolute z-10 w-full mt-1 bg-zinc-800 border-2 border-silver-700 max-h-60 overflow-auto custom-dropdown-menu">
+                      {#each AVAILABLE_BOOKS as book}
+                        <button 
+                          type="button"
+                          class="w-full text-left px-4 py-2 cursor-pointer hover:bg-brass-bg hover:text-brass-light focus:bg-brass-bg focus:text-brass-light"
+                          on:click={() => selectBook(book)}
+                          on:keydown={(e) => e.key === 'Enter' && selectBook(book)}
+                        >
+                          {book.name} ({book.author})
+                        </button>
+                      {/each}
+                    </div>
+                  {/if}
+                </div>
+                
+                <!-- Hidden select for form submission if needed -->
+                <select id="book-select" bind:value={selectedBook} class="hidden">
+                  <option value="" disabled>Choose a source text...</option>
+                  {#each AVAILABLE_BOOKS as book}
+                    <option value={book.id}>{book.name} ({book.author})</option>
+                  {/each}
+                </select>
+                
+                {#if isLoading}
+                  <p class="mt-2 text-silver-400/80 italic text-sm">Loading text from archives...</p>
+                {/if}
+                {#if parsedBook}
+                  <p class="mt-2 text-silver-400/80 text-sm">
+                    <span class="font-semibold text-silver-300">Source text loaded</span> and ready for encoding
+                  </p>
+                {/if}
+                {#if selectedBook}
+                  {#if !isLoading}
+                    {#if parsedBook}
+                      {#if AVAILABLE_BOOKS.find(b => b.id === selectedBook)?.description}
+                        <p class="mt-2 text-silver-400/80 text-sm italic">
+                          {AVAILABLE_BOOKS.find(b => b.id === selectedBook)?.description}
+                        </p>
+                      {/if}
                     {/if}
                   {/if}
                 {/if}
-              {/if}
+              </div>
+              <div>
+                <label for="keyword" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Cipher Key</label>
+                <input 
+                  type="text" 
+                  id="keyword" 
+                  bind:value={keyword}
+                  placeholder="Enter your cipher key..."
+                  class="w-full bg-zinc-900/80 border-2 border-silver-700 rounded-none px-4 py-3 text-silver-300 focus:outline-none focus:ring-2 focus:ring-silver-500 font-mono text-sm h-[50px]"
+                />
+                {#if keyword}
+                  <p class="mt-2 text-silver-400/80 text-sm">
+                    Numeric value: <span class="font-semibold text-silver-300">{cipher.generateSeedFromKeyword(keyword)}</span>
+                  </p>
+                {/if}
+              </div>
             </div>
-            <div>
-              <label for="keyword" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Cipher Key</label>
-              <input 
-                type="text" 
-                id="keyword" 
-                bind:value={keyword}
-                placeholder="Enter your cipher key..."
-                class="w-full bg-zinc-700 border-2 border-silver-700 rounded-none px-4 py-3 text-zinc-300 focus:outline-none focus:ring-2 focus:ring-silver-500 font-serif h-[50px]"
-              />
-              {#if keyword}
-                <p class="mt-2 text-silver-400/80 text-sm">
-                  Numeric value: <span class="font-semibold text-silver-300">{cipher.generateSeedFromKeyword(keyword)}</span>
-                </p>
-              {/if}
-            </div>
-          </div>
 
-          <!-- Tabs for Encode/Decode -->
-          <div class="mb-6 border-b-2 border-silver-700/30">
-            <div class="flex">
-              <button 
-                class={`py-3 px-6 font-semibold uppercase text-sm tracking-wider ${activeTab === 'encode' ? 'border-b-2 border-silver-400 text-silver-300 bg-zinc-700/50' : 'text-silver-400/80 hover:text-silver-300 hover:bg-zinc-700/30'}`}
-                on:click={() => setActiveTab('encode')}
-              >
-                <span class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
-                  </svg>
-                  Encode
-                </span>
-              </button>
-              <button 
-                class={`py-3 px-6 font-semibold uppercase text-sm tracking-wider ${activeTab === 'decode' ? 'border-b-2 border-silver-400 text-silver-300 bg-zinc-700/50' : 'text-silver-400/80 hover:text-silver-300 hover:bg-zinc-700/30'}`}
-                on:click={() => setActiveTab('decode')}
-              >
-                <span class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
-                  </svg>
-                  Decode
-                </span>
-              </button>
+            <!-- Tabs for Encode/Decode -->
+            <div class="mb-6 border-b-2 border-silver-700/30">
+              <div class="flex">
+                <button 
+                  class={`py-3 px-6 font-semibold uppercase text-sm tracking-wider ${activeTab === 'encode' ? 'border-b-2 border-silver-400 text-silver-300 bg-zinc-700/50' : 'text-silver-400/80 hover:text-silver-300 hover:bg-zinc-700/30'}`}
+                  on:click={() => setActiveTab('encode')}
+                >
+                  <span class="flex items-center">
+                    Encode
+                  </span>
+                </button>
+                <button 
+                  class={`py-3 px-6 font-semibold uppercase text-sm tracking-wider ${activeTab === 'decode' ? 'border-b-2 border-silver-400 text-silver-300 bg-zinc-700/50' : 'text-silver-400/80 hover:text-silver-300 hover:bg-zinc-700/30'}`}
+                  on:click={() => setActiveTab('decode')}
+                >
+                  <span class="flex items-center">
+                    Decode
+                  </span>
+                </button>
+              </div>
             </div>
-          </div>
-          
-          <!-- Encode/Decode Content -->
-          {#if activeTab === 'encode'}
-            <div>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <label for="input-text" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Content to Encode</label>
-                  <div class="relative">
+
+            <!-- Encode/Decode Content -->
+            {#if activeTab === 'encode'}
+              <div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div>
+                    <label for="input-text" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Content to Encode</label>
                     <textarea 
                       id="input-text" 
                       bind:value={inputText}
-                      placeholder="Enter the knowledge you wish to encode..."
-                      class="w-full bg-zinc-700 border-2 border-silver-700 rounded-none px-4 py-3 text-zinc-300 focus:outline-none focus:ring-2 focus:ring-silver-500 h-48 font-serif typewriter"
+                      placeholder="Enter the message you wish to encode..."
+                      class="w-full h-[200px] bg-zinc-900/80 border-2 border-silver-700 rounded-none px-4 py-3 text-silver-300 focus:outline-none focus:ring-2 focus:ring-silver-500 font-mono text-sm"
                     ></textarea>
                   </div>
-                </div>
-                <div>
-                  <label for="encoded-output" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Encoded Output</label>
-                  <div class="relative">
+                  <div>
+                    <label for="encoded-text" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Encoded Output</label>
                     <textarea 
-                      id="encoded-output" 
+                      id="encoded-text" 
                       bind:value={encodedText}
                       readonly
-                      placeholder="Your encoded message will appear here..."
-                      class="w-full bg-zinc-700 border-2 border-silver-700 rounded-none px-4 py-3 text-zinc-300 focus:outline-none focus:ring-2 focus:ring-silver-500 h-48 font-serif typewriter"
+                      class="w-full h-[200px] bg-zinc-900/80 border-2 border-silver-700 rounded-none px-4 py-3 text-silver-300 focus:outline-none focus:ring-2 focus:ring-silver-500 font-mono text-sm"
                     ></textarea>
-                    {#if encodedText}
-                      <button 
-                        class="absolute bottom-2 right-2 text-silver-400 hover:text-silver-300 focus:outline-none"
-                        on:click={() => {
-                          navigator.clipboard.writeText(encodedText);
-                          alert('Encoded text copied to clipboard');
-                        }}
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                        </svg>
-                      </button>
-                    {/if}
                   </div>
                 </div>
-              </div>
-              
-              <div class="flex justify-center">
-                <button 
-                  class="px-6 py-3 bg-silver-700 hover:bg-silver-600 text-zinc-900 rounded-none shadow-md font-semibold uppercase tracking-wider text-sm focus:outline-none focus:ring-2 focus:ring-silver-500 focus:ring-offset-2 focus:ring-offset-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed western-button"
-                  on:click={encodeMessage}
-                  disabled={!selectedBook || !keyword || !inputText || isLoading}
-                >
-                  <span class="flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
-                    </svg>
+                <div class="flex justify-center mt-4 w-full">
+                  <button 
+                    on:click={encodeMessage} 
+                    disabled={!parsedBook || !keyword || !inputText}
+                    class="px-6 py-3 bg-zinc-700 hover:bg-zinc-600 text-silver-300 font-semibold uppercase text-sm tracking-wider border-2 border-silver-700 focus:outline-none focus:ring-2 focus:ring-silver-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
                     Encode Message
-                  </span>
-                </button>
+                  </button>
+                </div>
               </div>
-            </div>
-          {:else}
-            <!-- Decode Section -->
-            <div>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <label for="encoded-input" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Encoded Message</label>
-                  <div class="relative">
+            {:else}
+              <!-- Decode Section -->
+              <div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div>
+                    <label for="encoded-input" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Encoded Message</label>
                     <textarea 
                       id="encoded-input" 
                       bind:value={encodedText}
-                      placeholder="Paste the encoded message here..."
-                      class="w-full bg-zinc-700 border-2 border-silver-700 rounded-none px-4 py-3 text-zinc-300 focus:outline-none focus:ring-2 focus:ring-silver-500 h-48 font-serif typewriter"
+                      placeholder="Enter the encoded message you wish to decode..."
+                      class="w-full h-[200px] bg-zinc-900/80 border-2 border-silver-700 rounded-none px-4 py-3 text-silver-300 focus:outline-none focus:ring-2 focus:ring-silver-500 font-mono text-sm"
                     ></textarea>
                   </div>
-                </div>
-                <div>
-                  <label for="decoded-output" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Decoded Content</label>
-                  <div class="relative">
+                  <div>
+                    <label for="decoded-text" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Decoded Output</label>
                     <textarea 
-                      id="decoded-output" 
+                      id="decoded-text" 
                       bind:value={decodedText}
                       readonly
-                      placeholder="The decoded content will be revealed here..."
-                      class="w-full bg-zinc-700 border-2 border-silver-700 rounded-none px-4 py-3 text-zinc-300 focus:outline-none focus:ring-2 focus:ring-silver-500 h-48 font-serif typewriter"
+                      class="w-full h-[200px] bg-zinc-900/80 border-2 border-silver-700 rounded-none px-4 py-3 text-silver-300 focus:outline-none focus:ring-2 focus:ring-silver-500 font-mono text-sm"
                     ></textarea>
-                    {#if decodedText}
-                      <button 
-                        class="absolute bottom-2 right-2 text-silver-400 hover:text-silver-300 focus:outline-none"
-                        on:click={() => {
-                          navigator.clipboard.writeText(decodedText);
-                          alert('Decoded text copied to clipboard');
-                        }}
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                        </svg>
-                      </button>
-                    {/if}
                   </div>
                 </div>
-              </div>
-              
-              <div class="flex justify-center">
-                <button 
-                  class="px-6 py-3 bg-silver-700 hover:bg-silver-600 text-zinc-900 rounded-none shadow-md font-semibold uppercase tracking-wider text-sm focus:outline-none focus:ring-2 focus:ring-silver-500 focus:ring-offset-2 focus:ring-offset-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed western-button"
-                  on:click={decodeMessage}
-                  disabled={!selectedBook || !keyword || !encodedText || isLoading}
-                >
-                  <span class="flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
-                    </svg>
+                <div class="flex justify-center mt-4 w-full">
+                  <button 
+                    on:click={decodeMessage} 
+                    disabled={!parsedBook || !keyword || !encodedText}
+                    class="px-6 py-3 bg-zinc-700 hover:bg-zinc-600 text-silver-300 font-semibold uppercase text-sm tracking-wider border-2 border-silver-700 focus:outline-none focus:ring-2 focus:ring-silver-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
                     Decode Message
-                  </span>
-                </button>
-              </div>
-            </div>
-          {/if}
-          
-          <!-- Occult Seal -->
-          <div class="mt-8 flex justify-center">
-            <div class="relative">
-              <div class="w-24 h-24 rounded-full border-2 border-silver-700/60 flex items-center justify-center occult-badge">
-                <div class="w-16 h-16 rounded-full border-2 border-silver-700/60 flex items-center justify-center">
-                  <div class="w-10 h-10 rounded-full border-2 border-silver-700/60 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-6 h-6 text-silver-400">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                  </div>
+                  </button>
                 </div>
               </div>
-              <div class="absolute inset-0 flex items-center justify-center">
-                <p class="text-xs text-silver-400 font-semibold tracking-widest rotate-45">SEALED</p>
-              </div>
-            </div>
+            {/if}
           </div>
         </div>
       </div>
@@ -379,20 +351,19 @@
   <!-- Footer -->
   <footer class="bg-zinc-800 py-8 text-silver-400/80 border-t-4 border-double border-silver-700 relative z-10">
     <div class="container mx-auto px-4 text-center">
-      <div class="flex justify-center items-center gap-3 mb-4">
-        <div class="h-px w-8 bg-gradient-to-r from-transparent to-silver-500/60"></div>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-4 h-4 text-silver-400">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v2m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-        </svg>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-5 h-5 text-silver-400">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-        </svg>
-        <div class="h-px w-8 bg-gradient-to-l from-transparent to-silver-500/60"></div>
+      <!-- Decorative element with multiple occult icons -->
+      <div class="flex justify-center items-center mb-4">
+        <div class="h-px w-12 bg-gradient-to-r from-transparent to-silver-500/60"></div>
+        <div class="flex items-center gap-4 mx-4">
+          <div class="occult-symbol-moon"></div>
+          <div class="occult-symbol-small"></div>
+          <div class="occult-symbol-sun"></div>
+        </div>
+        <div class="h-px w-12 bg-gradient-to-l from-transparent to-silver-500/60"></div>
       </div>
-      <p class="text-sm font-serif">
-        <span class="text-silver-400">Archivon</span> • <span class="text-silver-400/70">Order of Records</span>
-      </p>
-      <p class="text-xs mt-2 text-silver-400/50">For the preservation of knowledge and legacy</p>
+      
+      <p class="mb-2 text-xs typewriter text-silver-400/70">For members of the Order only. Unauthorized access is forbidden.</p>
+      <p class="text-xs typewriter text-silver-400/70">Use this utility to encode sensitive information before sending it to the Order.</p>
     </div>
   </footer>
 </main>
@@ -401,16 +372,17 @@
   :global(body) {
     background-color: rgb(24, 24, 27); /* zinc-900 */
     font-family: 'Special Elite', serif;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23a58e77' fill-opacity='0.05' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
   }
-  
+
   .font-display {
     font-family: 'Rye', serif;
   }
-  
+
   .typewriter {
     font-family: 'Special Elite', monospace;
   }
-  
+
   /* Color variables */
   :root {
     /* Silver colors */
@@ -419,57 +391,86 @@
     --color-silver-500: rgb(113, 113, 122);
     --color-silver-600: rgb(82, 82, 91);
     --color-silver-700: rgb(63, 63, 70);
-    
+
     /* Paper colors */
     --color-paper-light: rgb(250, 244, 234);
     --color-paper-mid: rgb(227, 214, 196);
     --color-paper-dark: rgb(191, 176, 154);
     --color-paper-burnt: rgb(165, 142, 119);
     --color-paper-edge: rgb(137, 108, 78);
-    
+
     /* Antique brass/gold colors */
     --color-brass-light: rgb(205, 179, 128);
     --color-brass-mid: rgb(181, 155, 106);
     --color-brass-dark: rgb(143, 119, 71);
     --color-brass-shadow: rgb(101, 86, 58);
   }
-  
+
   /* Add subtle animation to certain elements */
   @keyframes pulse-subtle {
     0%, 100% { opacity: 0.7; }
     50% { opacity: 0.9; }
   }
-  
-  svg {
+
+  /* Remove unused svg animation */
+  /* svg {
     animation: pulse-subtle 4s infinite ease-in-out;
-  }
-  
+  } */
+
   /* Paper texture effect with warm tones */
   .paper-texture {
     background-image: url('/paper-texture.jpg');
     background-repeat: repeat;
     background-size: 500px;
     mix-blend-mode: color-burn;
-    opacity: 0.12;
-    filter: sepia(25%) brightness(0.9);
+    opacity: 0.15;
+    filter: sepia(35%) brightness(0.85);
   }
-  
+
   /* Pentagram background */
   .pentagram {
     position: relative;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M50 5 L61 40 L97 40 L68 60 L79 95 L50 75 L21 95 L32 60 L3 40 L39 40 Z'/%3E%3Ccircle cx='50' cy='50' r='45' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M50 2 L50 98 M2 50 L98 50 M26 26 L74 74 M26 74 L74 26 M33 15 L67 85 M15 33 L85 67 M15 67 L85 33 M33 85 L67 15'/%3E%3Ccircle cx='50' cy='50' r='45' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M50 5 L61 40 L97 40 L68 60 L79 95 L50 75 L21 95 L32 60 L3 40 L39 40 Z'/%3E%3C/svg%3E");
     background-size: contain;
     background-repeat: no-repeat;
   }
-  
+
+  /* Western text styling */
+  .western-text {
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    position: relative;
+    color: var(--color-brass-light);
+    text-shadow: 
+      -1px -1px 0 rgba(0,0,0,0.3),
+      2px 2px 0 rgba(0,0,0,0.3),
+      0 0 5px rgba(205, 179, 128, 0.2);
+  }
+
+  .western-text::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='%23896c4e' stroke-width='0.5' d='M0,0 L20,20 M20,0 L0,20'/%3E%3C/svg%3E");
+    opacity: 0.1;
+    z-index: -1;
+  }
+
   /* Wanted poster styling with burnt paper tones */
   .wanted-poster {
     position: relative;
-    padding: 1rem;
-    background-color: rgba(165, 142, 119, 0.03);
-    box-shadow: inset 0 0 30px rgba(137, 108, 78, 0.03);
+    padding: 1.5rem;
+    background-color: rgba(165, 142, 119, 0.04);
+    box-shadow: 
+      inset 0 0 30px rgba(137, 108, 78, 0.05),
+      0 0 10px rgba(0,0,0,0.2);
+    border: 8px solid transparent;
+    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='75' height='75' viewBox='0 0 75 75'%3E%3Cpath fill='none' stroke='%238f7747' stroke-width='1' d='M0,0 L75,0 L75,75 L0,75 L0,0 Z M15,15 L60,15 L60,60 L15,60 L15,15 Z'/%3E%3C/svg%3E") 25 stretch;
   }
-  
+
   .wanted-poster::before {
     content: '';
     position: absolute;
@@ -479,12 +480,25 @@
     bottom: 0;
     border: 2px solid rgba(143, 119, 71, 0.2);
     pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23a58e77' fill-opacity='0.03' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
   }
-  
+
+  .wanted-poster::after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    font-family: 'Fredericka the Great', serif;
+    font-size: 0.65rem;
+    color: rgba(143, 119, 71, 0.4);
+    letter-spacing: 0.1em;
+    transform: rotate(-2deg);
+  }
+
   .wanted-poster-container {
     position: relative;
   }
-  
+
   .wanted-poster-container::before {
     content: '';
     position: absolute;
@@ -492,18 +506,19 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: linear-gradient(rgba(165, 142, 119, 0.03) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(165, 142, 119, 0.03) 1px, transparent 1px);
+    background-image: 
+      linear-gradient(rgba(165, 142, 119, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(165, 142, 119, 0.03) 1px, transparent 1px);
     background-size: 20px 20px;
     pointer-events: none;
     z-index: 1;
   }
-  
+
   /* Occult badge styling with brass accents */
   .occult-badge {
     position: relative;
   }
-  
+
   .occult-badge::before {
     content: '';
     position: absolute;
@@ -513,7 +528,7 @@
     transform: rotate(45deg);
     z-index: -1;
   }
-  
+
   .occult-badge::after {
     content: '';
     position: absolute;
@@ -525,7 +540,7 @@
     opacity: 0.4;
     z-index: -1;
   }
-  
+
   /* Occult seal styling with paper and brass tones */
   .occult-seal {
     position: relative;
@@ -533,19 +548,20 @@
     transform: rotate(-5deg);
     opacity: 0.8;
   }
-  
+
   .occult-seal span {
     display: inline-block;
     padding: 0.25rem 1rem;
     border: 2px solid var(--color-brass-dark);
     color: var(--color-brass-mid);
-    font-family: 'Special Elite', monospace;
+    font-family: 'Fredericka the Great', serif;
     font-weight: bold;
     font-size: 0.875rem;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.15em;
     background-color: rgba(165, 142, 119, 0.05);
+    text-transform: uppercase;
   }
-  
+
   .occult-seal::before {
     content: '';
     position: absolute;
@@ -553,87 +569,414 @@
     left: -5px;
     right: -5px;
     bottom: -5px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3C/svg%3E");
     background-size: contain;
     background-repeat: no-repeat;
     opacity: 0.4;
     z-index: -1;
   }
-  
+
+  /* Standard button styling */
+  .standard-button {
+    border: 2px solid var(--color-brass-dark);
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .standard-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  .standard-button:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
   /* Western style button with brass and paper tones */
   .western-button {
     position: relative;
     border: 2px solid rgba(143, 119, 71, 0.7);
     background-color: rgba(165, 142, 119, 0.05);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: all 0.2s ease;
+    overflow: hidden;
   }
-  
+
   .western-button::before {
     content: '';
     position: absolute;
-    top: 4px;
-    left: 4px;
-    right: 4px;
-    bottom: 4px;
-    border: 1px solid rgba(205, 179, 128, 0.2);
-    pointer-events: none;
+    width: 32px;
+    height: 32px;
+    background-color: rgba(143, 119, 71, 0.15);
+    transform: rotate(45deg);
+    z-index: -1;
   }
-  
+
+  .western-button:hover {
+    background-color: rgba(143, 119, 71, 0.2);
+  }
+
+  .western-button::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--color-brass-mid), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .western-button:hover::after {
+    opacity: 0.6;
+  }
+
+  .western-button:disabled {
+    background-color: rgba(143, 119, 71, 0.1);
+    border-color: rgba(143, 119, 71, 0.4);
+    color: rgba(24, 24, 27, 0.7);
+    text-shadow: 0 1px 0 rgba(205, 179, 128, 0.2);
+  }
+
+  .western-button:disabled::before {
+    border-color: rgba(205, 179, 128, 0.1);
+  }
+
   /* Form elements with paper and brass tones */
   input, textarea, select {
     background-color: rgba(24, 24, 27, 0.8);
     border-color: rgba(143, 119, 71, 0.4);
+    font-family: 'Special Elite', monospace;
+    letter-spacing: 0.05em;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23a58e77' fill-opacity='0.03' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
   }
-  
+
   input:focus, textarea:focus, select:focus {
     border-color: var(--color-brass-light);
     box-shadow: 0 0 0 1px rgba(165, 142, 119, 0.1);
   }
-  
+
   /* Add warm paper tones to various elements */
   .bg-zinc-800 {
     background-color: rgba(39, 39, 42, 0.95);
     box-shadow: inset 0 0 30px rgba(165, 142, 119, 0.05);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23a58e77' fill-opacity='0.03' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
   }
-  
+
   /* Reduce contrast for better readability */
   .text-zinc-100 {
     color: rgba(244, 244, 245, 0.9);
   }
-  
+
   .text-zinc-200 {
     color: rgba(228, 228, 231, 0.85);
   }
-  
+
   .text-zinc-300 {
     color: rgba(212, 212, 216, 0.85);
   }
-  
+
   /* Add brass accents to certain elements */
   .text-silver-300 {
-    color: var(--color-silver-300);
+    color: var(--color-brass-light);
   }
-  
+
   .text-silver-400 {
-    color: var(--color-silver-400);
+    color: var(--color-brass-mid);
   }
-  
+
   /* Add burnt paper edges to sections */
   .border-silver-700 {
     border-color: rgba(143, 119, 71, 0.5);
   }
-  
+
   /* Style gradients with brass tones */
   .bg-gradient-to-r, .bg-gradient-to-l {
     --tw-gradient-to: rgba(181, 155, 106, 0.5);
   }
-  
+
   /* Add brass highlights to headings */
-  h1, h2, h3 {
-    text-shadow: 0 0 3px rgba(205, 179, 128, 0.1);
+  h1, h2 {
+    text-shadow: 
+      -1px -1px 0 rgba(0,0,0,0.3),
+      1px 1px 0 rgba(0,0,0,0.3),
+      0 0 5px rgba(205, 179, 128, 0.2);
   }
-  
+
   /* Add burnt paper effect to edges */
   .border-double {
     border-color: rgba(137, 108, 78, 0.4);
+  }
+
+  /* Remove unused hr selector */
+  /* Western-style decorative dividers - not used */
+  /* hr {
+    border: 0;
+    height: 1px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='4' viewBox='0 0 200 4'%3E%3Cpath fill='none' stroke='%238f7747' stroke-width='1' stroke-dasharray='8 4' d='M0,2 L200,2'/%3E%3C/svg%3E");
+    margin: 1.5rem 0;
+    opacity: 0.5;
+  } */
+
+  /* Add weathered edges to the page */
+  main::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    background-image: 
+      radial-gradient(circle at 15% 0%, rgba(137, 108, 78, 0.1) 0%, transparent 25%),
+      radial-gradient(circle at 85% 0%, rgba(137, 108, 78, 0.1) 0%, transparent 25%),
+      radial-gradient(circle at 15% 100%, rgba(137, 108, 78, 0.1) 0%, transparent 25%),
+      radial-gradient(circle at 85% 100%, rgba(137, 108, 78, 0.1) 0%, transparent 25%),
+      radial-gradient(circle at 0% 50%, rgba(137, 108, 78, 0.1) 0%, transparent 25%),
+      radial-gradient(circle at 100% 50%, rgba(137, 108, 78, 0.1) 0%, transparent 25%);
+  }
+
+  /* Occult background elements for header */
+  .occult-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .occult-symbol-outer {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='none' stroke='%238f7747' stroke-width='0.3' d='M50 2 L50 98 M2 50 L98 50 M26 26 L74 74 M26 74 L74 26 M33 15 L67 85 M15 33 L85 67 M15 67 L85 33 M33 85 L67 15'/%3E%3Ccircle cx='50' cy='50' r='45' fill='none' stroke='%238f7747' stroke-width='0.3'/%3E%3Cpath fill='none' stroke='%238f7747' stroke-width='0.3' d='M50 5 L61 40 L97 40 L68 60 L79 95 L50 75 L21 95 L32 60 L3 40 L39 40 Z'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.15;
+  }
+
+  .occult-symbol-inner {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='none' stroke='%238f7747' stroke-width='0.4' d='M50 10 C50 8.34 13.66 7 12 7 C10.34 7 9 8.34 9 10 C9 11.66 10.34 13 12 13 L12 17 M12 13 L15 13 M12 15 L15 15'/%3E%3Cpath fill='none' stroke='%238f7747' stroke-width='0.4' d='M30 30 L70 70 M30 70 L70 30 M40 20 L60 80 M20 40 L80 60 M20 60 L80 40 M40 80 L60 20'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.2;
+    animation: slow-spin 60s linear infinite;
+  }
+
+  @keyframes slow-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Add styling for the occult symbol decorative elements */
+  .occult-symbol-tiny {
+    width: 16px;
+    height: 16px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='1' d='M12 2 L14 9 L21 9 L15 14 L17 21 L12 17 L7 21 L9 14 L3 9 L10 9 Z'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.6;
+  }
+  
+  .occult-symbol-small {
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M12 2 L14 9 L21 9 L15 14 L17 21 L12 17 L7 21 L9 14 L3 9 L10 9 Z'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.3' d='M12 6 L12 18 M6 12 L18 12 M8 8 L16 16 M8 16 L16 8'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.7;
+  }
+  
+  .occult-symbol-eye {
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M12 7 C5 7 3 12 3 12 C3 12 5 17 12 17 C19 17 21 12 21 12 C21 12 19 7 12 7 Z'/%3E%3Ccircle cx='12' cy='12' r='3' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.7;
+  }
+  
+  .occult-symbol-key {
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M10 8 C7.8 8 6 9.8 6 12 C6 14.2 7.8 16 10 16 C11.5 16 12.7 15.2 13.4 14 L18 14 L18 16 L16 16 L16 18 L14 18 L14 16 L13.4 16 C12.7 17.2 11.5 18 10 18 C6.7 18 4 15.3 4 12 C4 8.7 6.7 6 10 6 C11.5 6 12.9 6.6 14 7.5'/%3E%3Ccircle cx='10' cy='12' r='1.5' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.7;
+  }
+  
+  .occult-symbol-book {
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M7 6 C7 6 7 5 8 5 L16 5 C17 5 17 6 17 6 L17 18 C17 18 17 19 16 19 L8 19 C7 19 7 18 7 18 L7 6 Z'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.3' d='M9 8 L15 8 M9 11 L15 11 M9 14 L15 14 M9 17 L13 17'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M6 7 L18 7 M6 17 L18 17'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.7;
+  }
+  
+  .occult-symbol-cipher {
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M7 8 L10 8 M14 8 L17 8 M6 12 L9 12 M15 12 L18 12 M7 16 L11 16 M13 16 L17 16'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M11 7 L13 9 M11 9 L13 7 M10 11 L12 13 M10 13 L12 11 M12 15 L14 17 M12 17 L14 15'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.7;
+  }
+  
+  .occult-symbol-moon {
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M16 12 C16 8.69 13.31 6 10 6 C10 6 11 9 11 12 C11 15 10 18 10 18 C13.31 18 16 15.31 16 12 Z'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.7;
+  }
+  
+  .occult-symbol-sun {
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Ccircle cx='12' cy='12' r='4' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M12 4 L12 8 M12 16 L12 20 M4 12 L8 12 M16 12 L20 12 M6.34 6.34 L9.17 9.17 M14.83 14.83 L17.66 17.66 M6.34 17.66 L9.17 14.83 M14.83 9.17 L17.66 6.34'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.7;
+  }
+  
+  .occult-symbol-scroll {
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M7 6 C7 6 7 5 8 5 L16 5 C17 5 17 6 17 6 L17 18 C17 18 17 19 16 19 L8 19 C7 19 7 18 7 18 L7 6 Z'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.3' d='M9 8 L15 8 M9 11 L15 11 M9 14 L15 14 M9 17 L13 17'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M6 7 L18 7 M6 17 L18 17'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.7;
+  }
+  
+  /* Remove unused occult dots styles */
+  .occult-dots,
+  .occult-dots-small,
+  .occult-dots-tiny,
+  .occult-dots-large {
+    display: none;
+  }
+
+  /* Custom select styling */
+  .custom-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23c9b17c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    background-color: rgba(24, 24, 27, 0.8); /* Match input background */
+    font-family: 'Special Elite', monospace !important; /* Ensure Special Elite font is used */
+    letter-spacing: normal;
+    line-height: 1.5;
+    font-size: 0.875rem;
+    font-weight: 400;
+  }
+  
+  /* Special Elite font class */
+  .special-elite-font {
+    font-family: 'Special Elite', monospace !important;
+  }
+  
+  /* Style placeholder text for the dropdown */
+  .custom-select:empty::before {
+    content: attr(placeholder);
+    color: rgba(161, 161, 170, 0.7); /* Match input placeholder color */
+  }
+  
+  /* Placeholder text color */
+  .placeholder-text-color {
+    color: rgba(161, 161, 170, 1.0); /* Match input placeholder color with opacity */
+  }
+  
+  /* Style for when dropdown has a selected value */
+  .custom-select.has-value {
+    color: var(--color-silver-300);
+    opacity: 1;
+  }
+  
+  /* Override default dropdown option styling */
+  :global(select option) {
+    background-color: rgb(63, 63, 70); /* zinc-700 */
+    color: rgb(212, 212, 216); /* silver-300 */
+  }
+  
+  :global(select option:hover),
+  :global(select option:focus),
+  :global(select option:active),
+  :global(select option:checked) {
+    background-color: rgba(205, 179, 128, 0.3) !important; /* brass-light with transparency */
+    color: rgb(205, 179, 128) !important; /* brass-light */
+  }
+  
+  /* For Firefox */
+  :global(select:focus) {
+    color: rgb(205, 179, 128); /* brass-light */
+    border-color: rgb(205, 179, 128); /* brass-light */
+  }
+  
+  /* For Webkit browsers */
+  :global(select option:hover) {
+    background-color: rgba(205, 179, 128, 0.3);
+  }
+  
+  /* Custom dropdown styling */
+  .custom-dropdown-menu {
+    max-height: 200px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-brass-mid) var(--color-silver-700);
+  }
+  
+  .custom-dropdown-menu::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .custom-dropdown-menu::-webkit-scrollbar-track {
+    background: var(--color-silver-700);
+  }
+  
+  .custom-dropdown-menu::-webkit-scrollbar-thumb {
+    background-color: var(--color-brass-mid);
+  }
+  
+  /* Define brass background color for hover states */
+  .bg-brass-bg {
+    background-color: rgba(205, 179, 128, 0.2);
+  }
+  
+  .text-brass-light {
+    color: rgb(205, 179, 128);
+  }
+  
+  /* Ensure hover styles work properly */
+  .custom-dropdown-menu button:hover,
+  .custom-dropdown-menu button:focus {
+    background-color: rgba(205, 179, 128, 0.2);
+    color: rgb(205, 179, 128);
+    outline: none;
+  }
+  
+  .occult-symbol-quill {
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M8 18 L10 14 L18 6 C18 6 19 5 18 4 C17 3 16 4 16 4 L8 12 L6 14 L8 18 Z'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.3' d='M8 12 L12 8 M10 14 L14 10 M12 16 L16 12'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.7;
+  }
+  
+  .occult-symbol-letter {
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='none' stroke='%23c9b17c' stroke-width='0.5'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M5 8 L19 8 L19 16 L5 16 Z'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.5' d='M5 8 L12 13 L19 8'/%3E%3Cpath fill='none' stroke='%23c9b17c' stroke-width='0.3' d='M12 13 L12 16 M8 12 L5 16 M16 12 L19 16'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.7;
   }
 </style>
