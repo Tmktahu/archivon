@@ -155,6 +155,9 @@ export function encodeMessage(message: string, textSource: TextSource, keyword: 
   
   let result = '';
   
+  // Track used positions for each character
+  const usedPositions: Map<string, Set<number>> = new Map();
+  
   // Encode each character
   for (const char of message) {
     // Keep spaces and punctuation as is
@@ -163,22 +166,30 @@ export function encodeMessage(message: string, textSource: TextSource, keyword: 
       continue;
     }
     
+    // Initialize the set of used positions for this character if it doesn't exist
+    if (!usedPositions.has(char)) {
+      usedPositions.set(char, new Set<number>());
+    }
+    
+    // Get the set of positions already used for this character
+    const usedPositionsForChar = usedPositions.get(char)!;
+    
     // Find the exact character (case sensitive) in the source text
     let startPos = seed % sourceLength;
     let found = false;
     let foundIndex = -1;
     
-    // First try to find the exact character (case sensitive)
+    // First try to find the exact character (case sensitive) that hasn't been used before
     for (let i = 0; i < sourceLength; i++) {
       const pos = (startPos + i) % sourceLength;
-      if (sourceText[pos] === char) {
+      if (sourceText[pos] === char && !usedPositionsForChar.has(pos)) {
         foundIndex = pos;
         found = true;
         break;
       }
     }
     
-    // If not found with exact case, use the fallback
+    // If all occurrences have been used or character not found, use the fallback
     if (!found) {
       // Use the fallback encoding for this character
       const fallbackEncoding = FALLBACK_MAP[char];
@@ -189,6 +200,9 @@ export function encodeMessage(message: string, textSource: TextSource, keyword: 
         result += char;
       }
     } else {
+      // Mark this position as used for this character
+      usedPositionsForChar.add(foundIndex);
+      
       // Convert the index to a tuple of characters
       result += numberToTuple(foundIndex);
     }
