@@ -189,9 +189,44 @@ export function encodeMessage(message: string, textSource: TextSource, keyword: 
       }
     }
     
-    // If all occurrences have been used or character not found, use the fallback
+    // If all occurrences have been used or character not found, reset and reuse positions
     if (!found) {
-      // Use the fallback encoding for this character
+      // Check if we've used all occurrences of this character in the text
+      // Count how many times this character appears in the source text
+      let occurrenceCount = 0;
+      for (let i = 0; i < sourceLength; i++) {
+        if (sourceText[i] === char) {
+          occurrenceCount++;
+        }
+      }
+      
+      // If we've used all occurrences and there's at least one occurrence,
+      // reset the used positions for this character and try again
+      if (occurrenceCount > 0 && usedPositionsForChar.size >= occurrenceCount) {
+        // Reset used positions for this character
+        usedPositions.set(char, new Set<number>());
+        
+        // Try to find the character again with reset positions
+        for (let i = 0; i < sourceLength; i++) {
+          const pos = (startPos + i) % sourceLength;
+          if (sourceText[pos] === char) {
+            foundIndex = pos;
+            found = true;
+            break;
+          }
+        }
+        
+        if (found) {
+          // Mark this position as used for this character
+          usedPositionsForChar.add(foundIndex);
+          
+          // Convert the index to a tuple of characters
+          result += numberToTuple(foundIndex);
+          continue;
+        }
+      }
+      
+      // If still not found or no occurrences in text, use the fallback
       const fallbackEncoding = FALLBACK_MAP[char];
       if (fallbackEncoding) {
         result += fallbackEncoding;
