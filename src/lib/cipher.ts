@@ -37,10 +37,24 @@ export function generateSeedFromKeyword(keyword: string): number {
   // Convert keyword to lowercase to ensure case-insensitivity for the key
   const lowercaseKeyword = keyword.toLowerCase();
   
+  // Using a simple letter-to-number conversion (a=1, b=2, etc.)
+  // This would be a common approach in 1904
   let seed = 0;
   for (let i = 0; i < lowercaseKeyword.length; i++) {
-    seed += lowercaseKeyword.charCodeAt(i);
+    const char = lowercaseKeyword[i];
+    // For letters, use their position in alphabet (a=1, b=2, etc.)
+    if (char >= 'a' && char <= 'z') {
+      seed += (char.charCodeAt(0) - 96); // 'a' is 97 in ASCII, so -96 gives 1
+    } else {
+      // For non-letters, just use a simple value
+      seed += 1;
+    }
   }
+  
+  // Multiply by the length of the keyword for additional complexity
+  // This is still a calculation that could be done manually in 1904
+  seed *= lowercaseKeyword.length;
+  
   return seed;
 }
 
