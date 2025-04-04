@@ -80,6 +80,13 @@ export const AVAILABLE_BOOKS: Book[] = [
     author: 'Arthur Conan Doyle',
     filename: 'sherlock.txt',
     description: 'A collection of twelve short stories featuring the famous detective Sherlock Holmes.'
+  },
+  { 
+    id: 'cowboy', 
+    name: 'The Log of a Cowboy', 
+    author: 'Andy Adams',
+    filename: 'cowboy.txt',
+    description: 'A narrative of the old trail days, following cattle drives in the American West.'
   }
 ];
 
