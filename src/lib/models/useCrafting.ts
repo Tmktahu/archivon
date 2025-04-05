@@ -64,7 +64,7 @@ export const useCrafting = () => {
     };
     
     // Function to search recipes by name
-    const searchRecipes = (query: string): CraftingRecipe[] => {
+    const searchRecipes = (query: string, recipes: CraftingRecipe[]): CraftingRecipe[] => {
         if (!query) return recipes;
         
         const searchTerm = query.toLowerCase();

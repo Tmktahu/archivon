@@ -39,23 +39,22 @@
     
     // Single effect block for filtering recipes
     $effect(async () => {
-        recipes = await getAllRecipes();
-        filteredRecipes = [...recipes];
-        // Apply filters
-        if (searchQuery && selectedCategory) {
-            // Filter by both search query and category
-            filteredRecipes = searchRecipes(searchQuery).filter(recipe => recipe.category === selectedCategory);
-        } else if (searchQuery) {
-            // Filter by search query only
-            filteredRecipes = searchRecipes(searchQuery);
-        } else if (selectedCategory) {
-            // Filter by category only
-            filteredRecipes = getRecipesByCategory(selectedCategory);
-        } else {
-            // No filters, show all recipes
-            filteredRecipes = [...recipes];
-        }
+        filteredRecipes = await getAllRecipes();
+        recipes = filteredRecipes;
     });
+
+    const doSearch = () => {
+        if(!searchQuery && !selectedCategory) {
+            filteredRecipes = [...recipes];
+            return;
+        }
+
+        if(selectedCategory) {
+            filteredRecipes = searchRecipes(searchQuery, recipes).filter(recipe => recipe.category === selectedCategory);
+        } else {
+            filteredRecipes = searchRecipes(searchQuery, recipes);
+        }
+    };
     
     // Function to select a recipe
     const selectRecipe = (recipe) => {
@@ -191,8 +190,8 @@
                                     type="text" 
                                     id="search" 
                                     placeholder="Search..." 
-                                    value={searchQuery}
-                                    oninput={(e) => searchQuery = e.target.value}
+                                    bind:value={searchQuery}
+                                    oninput={doSearch}
                                     class="w-full bg-zinc-800/40 border-2 border-zinc-700/40 p-2 text-silver-300/90 placeholder-silver-600/50 focus:outline-none focus:border-brass-mid/70 typewriter"
                                 />
                             </div>
@@ -202,8 +201,8 @@
                                 <div class="relative">
                                     <select 
                                         id="category" 
-                                        value={selectedCategory}
-                                        onchange={(e) => selectedCategory = e.target.value}
+                                        bind:value={selectedCategory}
+                                        onchange={doSearch}
                                         class="w-full bg-zinc-800/40 border-2 border-zinc-700/40 p-2 text-silver-300/90 appearance-none focus:outline-none focus:border-brass-mid/70 typewriter select-custom"
                                     >
                                         <option value="">All Categories</option>
