@@ -104,7 +104,7 @@
         newRecipeAmount = 1;
         newRecipeCategory = CRAFTING_CATEGORIES.BASIC;
         newRecipeJob = CRAFTING_JOBS.NONE;
-        newRecipeExperience = 10;
+        newRecipeExperience = 0;
         newRecipeComponents = [{ name: '', amount: 1 }];
         
         // Refresh recipes list after a short delay
