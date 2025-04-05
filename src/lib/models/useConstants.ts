@@ -106,15 +106,16 @@ export interface CraftingComponent {
 export const CRAFTING_CATEGORIES = {
   BASIC: 'Basic',
   BLACKSMITHING: 'Blacksmithing',
+  BREWING: 'Brewing',
+  BUTCHERING: 'Butchering',
+  CARPENTRY: 'Carpentry',
   COOKING: 'Cooking',
   DRUGS: 'Drugs',
-  CARPENTRY: 'Carpentry',
-  MEDICAL: 'Medical',
-  TAILORING: 'Tailoring',
   JEWELRYSMITHING: 'JewelrySmithing',
-  GUNSMITHING: 'Gunsmithing',
+  MEDICAL: 'Medical',
   SURVIVAL: 'Survival',
-  BREWING: 'Brewing'
+  TAILORING: 'Tailoring',
+  GUNSMITHING: 'Gunsmithing'
 };
 
 /**
