@@ -1,7 +1,9 @@
-/**
- * Book definitions for the cipher application
- * This file centralizes all book-related constants for easy management
- */
+export const API_ROUTES = {
+  getCraftingRecipes: 'reddead/craftingRecipes',
+  getCraftingRecipe: 'reddead/craftingRecipe/:id',
+  createCraftingRecipe: 'reddead/craftingRecipe',
+  deleteCraftingRecipe: 'reddead/craftingRecipe/:id'
+};
 
 /**
  * Interface for Book object

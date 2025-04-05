@@ -34,7 +34,9 @@ jobs:
         run: yarn install --frozen-lockfile
       
       - name: Build
-        run: yarn build
+        run: |
+          echo "VITE_API_DOMAIN=${{ secrets.VITE_API_DOMAIN }}" >> .env
+          yarn build
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
