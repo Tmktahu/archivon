@@ -15,7 +15,7 @@ export interface CraftingRecipe {
 
 // Import recipes from constants
 import { useRest } from './useRest';
-import { API_ROUTES } from './useConstants';
+import { API_ROUTES, CRAFTING_CATEGORIES } from './useConstants';
 
 const { addQuery, doQuery } = useRest();
 
@@ -27,6 +27,14 @@ export const useCrafting = () => {
     const getAllRecipes = async (): Promise<CraftingRecipe[]> => {
         const data = await doQuery(API_ROUTES.getCraftingRecipes, {});
         if (!data) return [];
+
+        // we want to sort them by category in the order of CRAFTING_CATEGORIES
+        data.sort((a: CraftingRecipe, b: CraftingRecipe) => {
+            const aIndex = Object.values(CRAFTING_CATEGORIES).indexOf(a.category);
+            const bIndex = Object.values(CRAFTING_CATEGORIES).indexOf(b.category);
+            return aIndex - bIndex;
+        });
+        
         recipes = data;
         return recipes;
     };
