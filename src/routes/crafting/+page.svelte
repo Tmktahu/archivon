@@ -17,8 +17,8 @@
     let selectedRecipe = $state(null);
     
     // Initialize recipes directly in the script
-    let recipes = $state(getAllRecipes());
-    let filteredRecipes = $state([...recipes]);
+    let recipes = $state([]);
+    let filteredRecipes = $state([]);
     
     // Create new recipe form state
     let newRecipeName = $state('');
@@ -29,7 +29,9 @@
     let newRecipeComponents = $state([{ name: '', amount: 1 }]);
     
     // Single effect block for filtering recipes
-    $effect(() => {
+    $effect(async () => {
+        recipes = await getAllRecipes();
+        filteredRecipes = [...recipes];
         // Apply filters
         if (searchQuery && selectedCategory) {
             // Filter by both search query and category
@@ -99,9 +101,11 @@
         
         // Refresh recipes list after a short delay
         setTimeout(() => {
-            recipes = getAllRecipes();
-            filteredRecipes = [...recipes];
-        }, 500);
+            getAllRecipes().then(data => {
+                recipes = data;
+                filteredRecipes = [...recipes];
+            });
+        }, 1000);
     };
 </script>
 

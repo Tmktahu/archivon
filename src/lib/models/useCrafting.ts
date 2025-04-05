@@ -18,22 +18,18 @@ import { AVAILABLE_RECIPES } from './useConstants';
 import { useRest } from './useRest';
 import { API_ROUTES } from './useConstants';
 
-const { addQuery } = useRest();
+const { addQuery, doQuery } = useRest();
 
 export const useCrafting = () => {
     // Store for crafting recipes - initialize with recipes from constants
-    const recipes: CraftingRecipe[] = [...AVAILABLE_RECIPES];
-    
-    // Function to add a new recipe
-    const addRecipe = (recipe: CraftingRecipe) => {
-        recipes.push(recipe);
-        // Note: This only adds to the in-memory array
-        // To persist, you would manually update the constants file
-    };
+    let recipes: CraftingRecipe[] = [];
     
     // Function to get all recipes
-    const getAllRecipes = (): CraftingRecipe[] => {
-        return [...recipes];
+    const getAllRecipes = async (): Promise<CraftingRecipe[]> => {
+        const data = await doQuery(API_ROUTES.getCraftingRecipes, {});
+        if (!data) return [];
+        recipes = data;
+        return recipes;
     };
     
     // Function to get recipes by category
@@ -90,7 +86,12 @@ export const useCrafting = () => {
     
     // Function to create a new recipe
     const createRecipe = async (recipeData: any) => {
-        // the components needs to be json stringified
+        // Validate the recipe
+        if (!recipeData.name || !recipeData.amount || !recipeData.category || !recipeData.job || !recipeData.experience || !recipeData.components || !recipeData.components.length) {
+            console.error('Invalid recipe data:', recipeData);
+            return;
+        }
+
         recipeData.components = JSON.stringify(recipeData.components);
         console.log('Creating recipe:', recipeData);
 
@@ -104,7 +105,6 @@ export const useCrafting = () => {
     
     // Return the functions as an object
     return {
-        addRecipe,
         getAllRecipes,
         getRecipesByCategory,
         getRecipesByJob,

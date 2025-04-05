@@ -78,6 +78,7 @@ export const useRest = () => {
       }
 
       const data = response?.data;
+      console.log(data);
 
       if (data.error) {
         return null;
@@ -93,5 +94,6 @@ export const useRest = () => {
   return {
     setup,
     addQuery,
+    doQuery,
   };
 };
