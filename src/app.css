@@ -9,6 +9,36 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23a58e77' fill-opacity='0.05' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
 }
 
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(24, 24, 27, 0.6);
+  border: 1px solid rgba(143, 119, 71, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(143, 119, 71, 0.4);
+  border: 1px solid rgba(143, 119, 71, 0.7);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(143, 119, 71, 0.6);
+}
+
+::-webkit-scrollbar-corner {
+  background: rgba(24, 24, 27, 0.6);
+}
+
+/* Firefox scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(143, 119, 71, 0.4) rgba(24, 24, 27, 0.6);
+}
+
 /* Font styles */
 .font-display {
   font-family: 'Rye', serif;
@@ -45,16 +75,6 @@ body {
 @keyframes pulse-subtle {
   0%, 100% { opacity: 0.7; }
   50% { opacity: 0.9; }
-}
-
-/* Paper texture effect with warm tones */
-.paper-texture {
-  background-image: url('/paper-texture.jpg');
-  background-repeat: repeat;
-  background-size: 500px;
-  mix-blend-mode: color-burn;
-  opacity: 0.15;
-  filter: sepia(35%) brightness(0.85);
 }
 
 /* Logo background */

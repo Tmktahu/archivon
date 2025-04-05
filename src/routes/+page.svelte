@@ -2,7 +2,7 @@
   // @ts-nocheck - Disabling TypeScript checking for this file as requested
   import { onMount } from 'svelte';
   import * as cipher from '$lib/cipher';
-  import { AVAILABLE_BOOKS } from '$lib/models/constants';
+  import { AVAILABLE_BOOKS } from '$lib/models/useConstants';
 
   // State variables
   let selectedBook = '';
@@ -147,7 +147,7 @@
 
 <main class="min-h-screen bg-zinc-900 text-silver-400 relative">
   <!-- Paper texture background with subtle warm tone -->
-  <div class="absolute inset-0 bg-zinc-900 opacity-90 z-0 paper-texture"></div>
+  <div class="absolute inset-0 bg-zinc-900 opacity-90 z-0"></div>
 
   <!-- Logo background element -->
   <div class="absolute inset-0 flex items-center justify-center z-0 opacity-5">
