@@ -93,9 +93,7 @@ export const useCrafting = () => {
         }
 
         recipeData.components = JSON.stringify(recipeData.components);
-        console.log('Creating recipe:', recipeData);
-
-      addQuery(API_ROUTES.createCraftingRecipe, recipeData, () => {});
+        addQuery(API_ROUTES.createCraftingRecipe, recipeData, () => {});
     };
 
     // Function to delete a recipe

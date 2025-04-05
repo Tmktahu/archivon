@@ -1,4 +1,5 @@
 <script>
+    import { onMount } from 'svelte';
     import { useCrafting } from '$lib/models/useCrafting';
     import { CRAFTING_CATEGORIES, CRAFTING_JOBS, AVAILABLE_ITEMS } from '$lib/models/useConstants';
     
@@ -10,6 +11,14 @@
         createRecipe,
         deleteRecipe
     } = useCrafting();
+
+    let isAdmin = $state(false);
+
+    onMount(() => {
+        window.makeAdmin = () => {
+            isAdmin = true;
+        };
+    });
     
     // Initialize state variables
     let searchQuery = $state('');
@@ -30,6 +39,8 @@
     
     // Single effect block for filtering recipes
     $effect(async () => {
+
+        
         recipes = await getAllRecipes();
         filteredRecipes = [...recipes];
         // Apply filters
@@ -248,14 +259,38 @@
                                 <div class="border-2 border-double border-zinc-700/40 bg-zinc-800/20 p-4 flex flex-col overflow-auto h-full">
                                     <div class="flex justify-between items-center mb-4 border-b border-zinc-700/30 pb-3 flex-shrink-0">
                                         <h3 class="text-xl text-brass-light/90 font-display tracking-wider">{selectedRecipe.name || 'Unnamed Recipe'}</h3>
-                                        <button 
-                                            class="text-silver-500/80 hover:text-silver-300/90 transition-colors"
-                                            onclick={clearSelectedRecipe}
-                                        >
-                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                            </svg>
-                                        </button>
+                                        <div class="flex items-center">
+                                            {#if isAdmin}
+                                                <button 
+                                                    class="text-red-400/80 hover:text-red-300/90 transition-colors mr-3"
+                                                    onclick={() => {
+                                                        if (confirm(`Are you sure you want to delete "${selectedRecipe.name}"?`)) {
+                                                            deleteRecipe(selectedRecipe.id);
+                                                            selectedRecipe = null;
+                                                            setTimeout(() => {
+                                                                getAllRecipes().then(data => {
+                                                                    recipes = data;
+                                                                    filteredRecipes = [...recipes];
+                                                                });
+                                                            }, 1000);
+                                                        }
+                                                    }}
+                                                    title="Delete recipe"
+                                                >
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                    </svg>
+                                                </button>
+                                            {/if}
+                                            <button 
+                                                class="text-silver-500/80 hover:text-silver-300/90 transition-colors"
+                                                onclick={clearSelectedRecipe}
+                                            >
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </div>
                                     
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow">

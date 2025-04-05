@@ -78,7 +78,6 @@ export const useRest = () => {
       }
 
       const data = response?.data;
-      console.log(data);
 
       if (data.error) {
         return null;
