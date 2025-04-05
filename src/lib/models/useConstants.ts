@@ -112,7 +112,9 @@ export const CRAFTING_CATEGORIES = {
   MEDICAL: 'Medical',
   TAILORING: 'Tailoring',
   JEWELRYSMITHING: 'JewelrySmithing',
-  GUNSMITHING: 'Gunsmithing'
+  GUNSMITHING: 'Gunsmithing',
+  SURVIVAL: 'Survival',
+  BREWING: 'Brewing'
 };
 
 /**
