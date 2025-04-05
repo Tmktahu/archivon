@@ -29,7 +29,6 @@ export const useCrafting = () => {
     
     // Function to get all recipes
     const getAllRecipes = (): CraftingRecipe[] => {
-        console.log(recipes)
         return [...recipes];
     };
     
