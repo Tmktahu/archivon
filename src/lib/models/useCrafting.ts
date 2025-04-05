@@ -14,7 +14,6 @@ export interface CraftingRecipe {
 }
 
 // Import recipes from constants
-import { AVAILABLE_RECIPES } from './useConstants';
 import { useRest } from './useRest';
 import { API_ROUTES } from './useConstants';
 
@@ -87,7 +86,7 @@ export const useCrafting = () => {
     // Function to create a new recipe
     const createRecipe = async (recipeData: any) => {
         // Validate the recipe
-        if (!recipeData.name || !recipeData.amount || !recipeData.category || !recipeData.job || !recipeData.experience || !recipeData.components || !recipeData.components.length) {
+        if (!recipeData.name || !recipeData.amount || !recipeData.category || !recipeData.job || recipeData.experience === null || !recipeData.components || !recipeData.components.length) {
             console.error('Invalid recipe data:', recipeData);
             return;
         }

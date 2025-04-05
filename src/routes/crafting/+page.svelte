@@ -1,7 +1,7 @@
 <script>
     import { onMount } from 'svelte';
     import { useCrafting } from '$lib/models/useCrafting';
-    import { CRAFTING_CATEGORIES, CRAFTING_JOBS, AVAILABLE_ITEMS } from '$lib/models/useConstants';
+    import { CRAFTING_CATEGORIES, CRAFTING_JOBS } from '$lib/models/useConstants';
     
     // Get crafting functions
     const { 
@@ -34,13 +34,11 @@
     let newRecipeAmount = $state(1);
     let newRecipeCategory = $state(CRAFTING_CATEGORIES.BASIC);
     let newRecipeJob = $state(CRAFTING_JOBS.NONE);
-    let newRecipeExperience = $state(10);
+    let newRecipeExperience = $state(0);
     let newRecipeComponents = $state([{ name: '', amount: 1 }]);
     
     // Single effect block for filtering recipes
     $effect(async () => {
-
-        
         recipes = await getAllRecipes();
         filteredRecipes = [...recipes];
         // Apply filters
@@ -310,7 +308,7 @@
                                                 <span class="ml-2 text-silver-300/90 typewriter">{selectedRecipe.amount || 1} × {selectedRecipe.name || 'Unnamed Recipe'}</span>
                                             </div>
                                             
-                                            {#if selectedRecipe.experience && selectedRecipe.experience > 0}
+                                            {#if selectedRecipe.experience}
                                                 <div class="mb-4">
                                                     <span class="text-silver-500/80 text-sm uppercase tracking-wider">Experience:</span>
                                                     <span class="ml-2 text-silver-300/90 typewriter">{selectedRecipe.experience} XP</span>
@@ -382,8 +380,8 @@
                                                         type="number" 
                                                         id="recipeExperience" 
                                                         value={newRecipeExperience}
-                                                        oninput={(e) => newRecipeExperience = parseInt(e.target.value) || 0}
-                                                        min="0"
+                                                        oninput={(e) => newRecipeExperience = parseInt(e.target.value || '0')}
+                                                        min="-1"
                                                         class="w-full bg-zinc-800/40 border-2 border-zinc-700/40 p-2 text-silver-300/90 focus:outline-none focus:border-brass-mid/70 typewriter"
                                                     />
                                                 </div>
@@ -450,27 +448,17 @@
                                                     {#each newRecipeComponents as component, index}
                                                         <div class="flex items-center space-x-2 p-2 border border-zinc-700/30 bg-zinc-800/30">
                                                             <div class="flex-grow">
-                                                                <div class="relative">
-                                                                    <select 
-                                                                        value={component.name}
-                                                                        onchange={(e) => {
-                                                                            const updated = [...newRecipeComponents];
-                                                                            updated[index].name = e.target.value;
-                                                                            newRecipeComponents = updated;
-                                                                        }}
-                                                                        class="w-full bg-zinc-800/40 border border-zinc-700/40 p-1 text-silver-300/90 appearance-none focus:outline-none focus:border-brass-mid/70 typewriter select-custom text-sm"
-                                                                    >
-                                                                        <option value="">Select an item</option>
-                                                                        {#each Object.values(AVAILABLE_ITEMS) as item}
-                                                                            <option value={item.name}>{item.name}</option>
-                                                                        {/each}
-                                                                    </select>
-                                                                    <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                                                                        <svg class="w-3 h-3 text-silver-400/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                                                        </svg>
-                                                                    </div>
-                                                                </div>
+                                                                <input 
+                                                                    type="text"
+                                                                    value={component.name}
+                                                                    oninput={(e) => {
+                                                                        const updated = [...newRecipeComponents];
+                                                                        updated[index].name = e.target.value;
+                                                                        newRecipeComponents = updated;
+                                                                    }}
+                                                                    placeholder="Enter component name"
+                                                                    class="w-full bg-zinc-800/40 border border-zinc-700/40 p-1 text-silver-300/90 focus:outline-none focus:border-brass-mid/70 typewriter text-sm"
+                                                                />
                                                             </div>
                                                             
                                                             <div class="w-20">
