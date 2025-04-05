@@ -344,95 +344,97 @@
                                 <div class="flex flex-col h-full border-2 border-double border-zinc-700/40 bg-zinc-800/20 p-4">
                                     <h3 class="text-xl text-brass-light/90 font-display tracking-wider mb-4 border-b border-zinc-700/30 pb-3">Create New Recipe</h3>
                                     
-                                    <div class="overflow-auto flex-grow">
-                                        <form class="space-y-4" onsubmit={(e) => { e.preventDefault(); submitNewRecipe(); }}>
-                                            <div>
-                                                <label for="recipeName" class="block text-silver-500/80 text-sm uppercase tracking-wider mb-1">Recipe Name</label>
-                                                <input 
-                                                    type="text" 
-                                                    id="recipeName" 
-                                                    value={newRecipeName}
-                                                    oninput={(e) => newRecipeName = e.target.value}
-                                                    class="w-full bg-zinc-800/40 border-2 border-zinc-700/40 p-2 text-silver-300/90 placeholder-silver-600/50 focus:outline-none focus:border-brass-mid/70 typewriter"
-                                                    placeholder="Enter recipe name"
-                                                    required
-                                                />
-                                            </div>
-                                            
-                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="flex flex-col flex-grow overflow-hidden">
+                                        <form class="flex flex-col h-full" onsubmit={(e) => { e.preventDefault(); submitNewRecipe(); }}>
+                                            <div class="space-y-4 flex-shrink-0">
                                                 <div>
-                                                    <label for="recipeAmount" class="block text-silver-500/80 text-sm uppercase tracking-wider mb-1">Amount Produced</label>
+                                                    <label for="recipeName" class="block text-silver-500/80 text-sm uppercase tracking-wider mb-1">Recipe Name</label>
                                                     <input 
-                                                        type="number" 
-                                                        id="recipeAmount" 
-                                                        value={newRecipeAmount}
-                                                        oninput={(e) => newRecipeAmount = parseInt(e.target.value) || 1}
-                                                        min="1"
-                                                        class="w-full bg-zinc-800/40 border-2 border-zinc-700/40 p-2 text-silver-300/90 focus:outline-none focus:border-brass-mid/70 typewriter"
+                                                        type="text" 
+                                                        id="recipeName" 
+                                                        value={newRecipeName}
+                                                        oninput={(e) => newRecipeName = e.target.value}
+                                                        class="w-full bg-zinc-800/40 border-2 border-zinc-700/40 p-2 text-silver-300/90 placeholder-silver-600/50 focus:outline-none focus:border-brass-mid/70 typewriter"
+                                                        placeholder="Enter recipe name"
                                                         required
                                                     />
                                                 </div>
                                                 
-                                                <div>
-                                                    <label for="recipeExperience" class="block text-silver-500/80 text-sm uppercase tracking-wider mb-1">Experience Points</label>
-                                                    <input 
-                                                        type="number" 
-                                                        id="recipeExperience" 
-                                                        value={newRecipeExperience}
-                                                        oninput={(e) => newRecipeExperience = parseInt(e.target.value || '0')}
-                                                        min="-1"
-                                                        class="w-full bg-zinc-800/40 border-2 border-zinc-700/40 p-2 text-silver-300/90 focus:outline-none focus:border-brass-mid/70 typewriter"
-                                                    />
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div>
-                                                    <label for="recipeCategory" class="block text-silver-500/80 text-sm uppercase tracking-wider mb-1">Category</label>
-                                                    <div class="relative">
-                                                        <select 
-                                                            id="recipeCategory" 
-                                                            value={newRecipeCategory}
-                                                            onchange={(e) => newRecipeCategory = e.target.value}
-                                                            class="w-full bg-zinc-800/40 border-2 border-zinc-700/40 p-2 text-silver-300/90 appearance-none focus:outline-none focus:border-brass-mid/70 typewriter select-custom"
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label for="recipeAmount" class="block text-silver-500/80 text-sm uppercase tracking-wider mb-1">Amount Produced</label>
+                                                        <input 
+                                                            type="number" 
+                                                            id="recipeAmount" 
+                                                            value={newRecipeAmount}
+                                                            oninput={(e) => newRecipeAmount = parseInt(e.target.value) || 1}
+                                                            min="1"
+                                                            class="w-full bg-zinc-800/40 border-2 border-zinc-700/40 p-2 text-silver-300/90 focus:outline-none focus:border-brass-mid/70 typewriter"
                                                             required
-                                                        >
-                                                            {#each Object.values(CRAFTING_CATEGORIES) as category}
-                                                                <option value={category}>{category}</option>
-                                                            {/each}
-                                                        </select>
-                                                        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                                                            <svg class="w-4 h-4 text-silver-400/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                                            </svg>
-                                                        </div>
+                                                        />
+                                                    </div>
+                                                    
+                                                    <div>
+                                                        <label for="recipeExperience" class="block text-silver-500/80 text-sm uppercase tracking-wider mb-1">Experience Points</label>
+                                                        <input 
+                                                            type="number" 
+                                                            id="recipeExperience" 
+                                                            value={newRecipeExperience}
+                                                            oninput={(e) => newRecipeExperience = parseInt(e.target.value || '0')}
+                                                            min="-1"
+                                                            class="w-full bg-zinc-800/40 border-2 border-zinc-700/40 p-2 text-silver-300/90 focus:outline-none focus:border-brass-mid/70 typewriter"
+                                                        />
                                                     </div>
                                                 </div>
                                                 
-                                                <div>
-                                                    <label for="recipeJob" class="block text-silver-500/80 text-sm uppercase tracking-wider mb-1">Required Job</label>
-                                                    <div class="relative">
-                                                        <select 
-                                                            id="recipeJob" 
-                                                            value={newRecipeJob}
-                                                            onchange={(e) => newRecipeJob = e.target.value}
-                                                            class="w-full bg-zinc-800/40 border-2 border-zinc-700/40 p-2 text-silver-300/90 appearance-none focus:outline-none focus:border-brass-mid/70 typewriter select-custom"
-                                                        >
-                                                            {#each Object.values(CRAFTING_JOBS) as job}
-                                                                <option value={job}>{job}</option>
-                                                            {/each}
-                                                        </select>
-                                                        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                                                            <svg class="w-4 h-4 text-silver-400/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                                            </svg>
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label for="recipeCategory" class="block text-silver-500/80 text-sm uppercase tracking-wider mb-1">Category</label>
+                                                        <div class="relative">
+                                                            <select 
+                                                                id="recipeCategory" 
+                                                                value={newRecipeCategory}
+                                                                onchange={(e) => newRecipeCategory = e.target.value}
+                                                                class="w-full bg-zinc-800/40 border-2 border-zinc-700/40 p-2 text-silver-300/90 appearance-none focus:outline-none focus:border-brass-mid/70 typewriter select-custom"
+                                                                required
+                                                            >
+                                                                {#each Object.values(CRAFTING_CATEGORIES) as category}
+                                                                    <option value={category}>{category}</option>
+                                                                {/each}
+                                                            </select>
+                                                            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                                                                <svg class="w-4 h-4 text-silver-400/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div>
+                                                        <label for="recipeJob" class="block text-silver-500/80 text-sm uppercase tracking-wider mb-1">Required Job</label>
+                                                        <div class="relative">
+                                                            <select 
+                                                                id="recipeJob" 
+                                                                value={newRecipeJob}
+                                                                onchange={(e) => newRecipeJob = e.target.value}
+                                                                class="w-full bg-zinc-800/40 border-2 border-zinc-700/40 p-2 text-silver-300/90 appearance-none focus:outline-none focus:border-brass-mid/70 typewriter select-custom"
+                                                            >
+                                                                {#each Object.values(CRAFTING_JOBS) as job}
+                                                                    <option value={job}>{job}</option>
+                                                                {/each}
+                                                            </select>
+                                                            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                                                                <svg class="w-4 h-4 text-silver-400/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                                </svg>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             
-                                            <div>
-                                                <div class="flex justify-between items-center mb-2">
+                                            <div class="flex flex-col flex-grow overflow-hidden mt-4">
+                                                <div class="flex justify-between items-center mb-2 flex-shrink-0">
                                                     <label class="text-silver-500/80 text-sm uppercase tracking-wider">Components</label>
                                                     <button 
                                                         type="button"
@@ -443,7 +445,7 @@
                                                     </button>
                                                 </div>
                                                 
-                                                <div class="space-y-3 max-h-40 overflow-y-auto p-1">
+                                                <div class="flex flex-col space-y-3 overflow-y-auto flex-grow mb-4">
                                                     {#each newRecipeComponents as component, index}
                                                         <div class="flex items-center space-x-2 p-2 border border-zinc-700/30 bg-zinc-800/30">
                                                             <div class="flex-grow">
@@ -490,7 +492,7 @@
                                                 </div>
                                             </div>
                                             
-                                            <div class="flex justify-end pt-4 border-t border-zinc-700/30">
+                                            <div class="flex justify-end pt-4 border-t border-zinc-700/30 flex-shrink-0">
                                                 <button 
                                                     type="submit"
                                                     class="western-button py-2 px-6 text-brass-light/90 text-sm tracking-wider"
