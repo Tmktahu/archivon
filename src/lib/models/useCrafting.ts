@@ -10,7 +10,7 @@ export interface CraftingRecipe {
     components: CraftingComponent[];
     experience: number;
     category: string;
-    requiredJob: string;
+    job: string;
 }
 
 // Import recipes from constants
@@ -43,7 +43,7 @@ export const useCrafting = () => {
     
     // Function to get recipes by job
     const getRecipesByJob = (job: string): CraftingRecipe[] => {
-        return recipes.filter(recipe => recipe.requiredJob === job);
+        return recipes.filter(recipe => recipe.job === job);
     };
     
     // Function to get all available categories that have recipes
@@ -56,7 +56,7 @@ export const useCrafting = () => {
     // Function to get all available jobs that have recipes
     const getAvailableJobs = (): string[] => {
         const jobs = new Set<string>();
-        recipes.forEach(recipe => jobs.add(recipe.requiredJob));
+        recipes.forEach(recipe => jobs.add(recipe.job));
         return Array.from(jobs).sort();
     };
     

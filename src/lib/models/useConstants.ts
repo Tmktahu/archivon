@@ -179,7 +179,7 @@ export interface CraftingRecipe {
   components: CraftingComponent[];
   experience: number;
   category: string;
-  requiredJob: string;
+  job: string;
 }
 
 /**
@@ -195,7 +195,7 @@ export const AVAILABLE_RECIPES: CraftingRecipe[] = [
     ],
     experience: -1,
     category: CRAFTING_CATEGORIES.BASIC,
-    requiredJob: CRAFTING_JOBS.NONE
+    job: CRAFTING_JOBS.NONE
   },
   {
     name: AVAILABLE_ITEMS.PIPE.name,
@@ -207,7 +207,7 @@ export const AVAILABLE_RECIPES: CraftingRecipe[] = [
     ],
     experience: -1,
     category: CRAFTING_CATEGORIES.BASIC,
-    requiredJob: CRAFTING_JOBS.NONE
+    job: CRAFTING_JOBS.NONE
   },
   {
     name: AVAILABLE_ITEMS.EMPTY_BOWL.name,
@@ -218,7 +218,7 @@ export const AVAILABLE_RECIPES: CraftingRecipe[] = [
     ],
     experience: -1,
     category: CRAFTING_CATEGORIES.BASIC,
-    requiredJob: CRAFTING_JOBS.NONE
+    job: CRAFTING_JOBS.NONE
   },
   {
     name: AVAILABLE_ITEMS.BOWL_OF_CLEAN_WATER.name,
@@ -228,7 +228,7 @@ export const AVAILABLE_RECIPES: CraftingRecipe[] = [
     ],
     experience: -1,
     category: CRAFTING_CATEGORIES.BASIC,
-    requiredJob: CRAFTING_JOBS.NONE
+    job: CRAFTING_JOBS.NONE
   },
   {
     name: AVAILABLE_ITEMS.IRON_BARS.name,
@@ -240,7 +240,7 @@ export const AVAILABLE_RECIPES: CraftingRecipe[] = [
     ],
     experience: -1,
     category: CRAFTING_CATEGORIES.BLACKSMITHING,
-    requiredJob: CRAFTING_JOBS.NONE
+    job: CRAFTING_JOBS.NONE
   },
   {
     name: AVAILABLE_ITEMS.NAILS.name,
@@ -251,7 +251,7 @@ export const AVAILABLE_RECIPES: CraftingRecipe[] = [
     ],
     experience: -1,
     category: CRAFTING_CATEGORIES.BLACKSMITHING,
-    requiredJob: CRAFTING_JOBS.NONE
+    job: CRAFTING_JOBS.NONE
   },
   {
     name: AVAILABLE_ITEMS.BOLTS.name,
@@ -262,7 +262,7 @@ export const AVAILABLE_RECIPES: CraftingRecipe[] = [
     ],
     experience: -1,
     category: CRAFTING_CATEGORIES.BLACKSMITHING,
-    requiredJob: CRAFTING_JOBS.NONE
+    job: CRAFTING_JOBS.NONE
   },
   {
     name: AVAILABLE_ITEMS.SHELL_CASING.name,
@@ -274,7 +274,7 @@ export const AVAILABLE_RECIPES: CraftingRecipe[] = [
     ],
     experience: -1,
     category: CRAFTING_CATEGORIES.BLACKSMITHING,
-    requiredJob: CRAFTING_JOBS.NONE
+    job: CRAFTING_JOBS.NONE
   },
   {
     name: AVAILABLE_ITEMS.REVOLVER_MOLD.name,
@@ -285,7 +285,7 @@ export const AVAILABLE_RECIPES: CraftingRecipe[] = [
     ],
     experience: -1,
     category: CRAFTING_CATEGORIES.BLACKSMITHING,
-    requiredJob: CRAFTING_JOBS.NONE
+    job: CRAFTING_JOBS.NONE
   },
   {
     name: AVAILABLE_ITEMS.REVOLVER_BARREL.name,
@@ -297,7 +297,7 @@ export const AVAILABLE_RECIPES: CraftingRecipe[] = [
     ],
     experience: -1,
     category: CRAFTING_CATEGORIES.BLACKSMITHING,
-    requiredJob: CRAFTING_JOBS.NONE
+    job: CRAFTING_JOBS.NONE
   },
   {
     name: AVAILABLE_ITEMS.REVOLVER_CYLINDER.name,
@@ -308,7 +308,7 @@ export const AVAILABLE_RECIPES: CraftingRecipe[] = [
     ],
     experience: -1,
     category: CRAFTING_CATEGORIES.BLACKSMITHING,
-    requiredJob: CRAFTING_JOBS.NONE
+    job: CRAFTING_JOBS.NONE
   },
   {
     name: AVAILABLE_ITEMS.REVOLVER_HANDLE.name,
@@ -319,7 +319,7 @@ export const AVAILABLE_RECIPES: CraftingRecipe[] = [
     ],
     experience: -1,
     category: CRAFTING_CATEGORIES.BLACKSMITHING,
-    requiredJob: CRAFTING_JOBS.NONE
+    job: CRAFTING_JOBS.NONE
   },
   {
     name: AVAILABLE_ITEMS.IRON_HAMMER.name,
@@ -331,7 +331,7 @@ export const AVAILABLE_RECIPES: CraftingRecipe[] = [
     ],
     experience: -1,
     category: CRAFTING_CATEGORIES.BLACKSMITHING,
-    requiredJob: CRAFTING_JOBS.NONE
+    job: CRAFTING_JOBS.NONE
   },
   {
     name: AVAILABLE_ITEMS.GLASS_BOTTLES.name,
@@ -343,7 +343,7 @@ export const AVAILABLE_RECIPES: CraftingRecipe[] = [
     ],
     experience: -1,
     category: CRAFTING_CATEGORIES.BLACKSMITHING,
-    requiredJob: CRAFTING_JOBS.NONE
+    job: CRAFTING_JOBS.NONE
   },
   {
     name: AVAILABLE_ITEMS.PANES_OF_GLASS.name,
@@ -354,6 +354,6 @@ export const AVAILABLE_RECIPES: CraftingRecipe[] = [
     ],
     experience: -1,
     category: CRAFTING_CATEGORIES.BLACKSMITHING,
-    requiredJob: CRAFTING_JOBS.NONE
+    job: CRAFTING_JOBS.NONE
   },
 ];

@@ -82,7 +82,7 @@
             name: newRecipeName,
             amount: newRecipeAmount,
             category: newRecipeCategory,
-            requiredJob: newRecipeJob,
+            job: newRecipeJob,
             experience: newRecipeExperience,
             components: validComponents
         };
@@ -263,7 +263,7 @@
                                             
                                             <div class="mb-4">
                                                 <span class="text-silver-500/80 text-sm uppercase tracking-wider">Required Job:</span>
-                                                <span class="ml-2 text-silver-300/90 typewriter">{selectedRecipe.requiredJob || 'None'}</span>
+                                                <span class="ml-2 text-silver-300/90 typewriter">{selectedRecipe.job || 'None'}</span>
                                             </div>
                                             
                                             <div class="mb-4">
