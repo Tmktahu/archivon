@@ -370,7 +370,7 @@
                 <div class="flex justify-center mt-4 w-full">
                   <button 
                     on:click={encodeMessage} 
-                    disabled={!parsedBook || !keyword || !inputText}
+                    disabled={!parsedBook || !keyword || !inputText || isLoading}
                     class="px-6 py-3 bg-zinc-700 hover:bg-zinc-600 text-silver-300 font-semibold uppercase text-sm tracking-wider border-2 border-silver-700 focus:outline-none focus:ring-2 focus:ring-silver-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Encode Message
@@ -403,7 +403,7 @@
                 <div class="flex justify-center mt-4 w-full">
                   <button 
                     on:click={decodeMessage} 
-                    disabled={!parsedBook || !keyword || !encodedText}
+                    disabled={!parsedBook || !keyword || !encodedText || isLoading}
                     class="px-6 py-3 bg-zinc-700 hover:bg-zinc-600 text-silver-300 font-semibold uppercase text-sm tracking-wider border-2 border-silver-700 focus:outline-none focus:ring-2 focus:ring-silver-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Decode Message

@@ -20,6 +20,7 @@ export function parseTextContent(content: string): TextSource {
   // For character-based indexing, we just need the raw text
   // Normalize whitespace
   const cleanedText = content
+    .replace(/\uFEFF/g, '')         // Remove BOM characters
     .replace(/\s+/g, ' ')           // Normalize whitespace
     .trim();                        // Trim leading/trailing whitespace
   
@@ -62,13 +63,35 @@ export function generateSeedFromKeyword(keyword: string): number {
  * Combined Russian (Cyrillic) and Greek alphabet for encoding
  * This provides a larger character set for tuple-based encoding
  */
-const COMBINED_ALPHABET = 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюяΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψω';
+// const COMBINED_ALPHABET = 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюяΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψω';
+
+/**
+ * Checks if a character is part of the combined cipher alphabet (ciphertext)
+ * @param char Character to check
+ * @returns True if the character is in the combined alphabet
+ */
+function isCiphertextCharacter(char: string): boolean {
+  return COMBINED_ALPHABET.includes(char);
+}
+
+/**
+ * Checks if a character is plaintext (ASCII)
+ * @param char Character to check
+ * @returns True if the character is ASCII
+ */
+function isPlaintextCharacter(char: string): boolean {
+  return /^[A-Za-z]$/.test(char);
+}
+
+// we want to take the character set above and make a random string of them
+// we need to do this for compatibility with the syn_mail system
+const COMBINED_ALPHABET = 'ÝôµÈÆìªíÎó¢¶Ú¤ñð£âåéÙùæûçÂÇÿïÐØÞòÜÍÊÄÖõ¿üÏêÓºãä¬ÅàÀÕøþöË¥±ÛÌÑáÔèÁÃßîúÒëÉý';
 
 /**
  * Special character to indicate fallback encoding
  * This character must not be in the COMBINED_ALPHABET
  */
-const FALLBACK_INDICATOR = '⁂'; // Triple asterisk symbol, very uncommon
+const FALLBACK_INDICATOR = '§'; // Unique fallback indicator, not in COMBINED_ALPHABET
 
 /**
  * Fallback map for characters not found in the source text
@@ -159,6 +182,7 @@ function getCharacterFromFallback(fallbackEncoding: string): string | null {
  */
 export function encodeMessage(message: string, textSource: TextSource, keyword: string): string {
   if (!message || !keyword || !textSource.rawText) return '';
+
   
   // Convert keyword to lowercase to ensure case-insensitivity for the key
   const lowercaseKeyword = keyword.toLowerCase();
@@ -175,7 +199,7 @@ export function encodeMessage(message: string, textSource: TextSource, keyword: 
   // Encode each character
   for (const char of message) {
     // Keep spaces and punctuation as is
-    if (char === ' ' || !/[a-zA-Z]/.test(char)) {
+    if (char === ' ' || !isPlaintextCharacter(char)) {
       result += char;
       continue;
     }
@@ -205,7 +229,6 @@ export function encodeMessage(message: string, textSource: TextSource, keyword: 
     
     // If all occurrences have been used or character not found, reset and reuse positions
     if (!found) {
-      // Check if we've used all occurrences of this character in the text
       // Count how many times this character appears in the source text
       let occurrenceCount = 0;
       for (let i = 0; i < sourceLength; i++) {
@@ -213,13 +236,19 @@ export function encodeMessage(message: string, textSource: TextSource, keyword: 
           occurrenceCount++;
         }
       }
-      
-      // If we've used all occurrences and there's at least one occurrence,
-      // reset the used positions for this character and try again
-      if (occurrenceCount > 0 && usedPositionsForChar.size >= occurrenceCount) {
-        // Reset used positions for this character
+
+      if (occurrenceCount === 0) {
+        // Character does not exist in book at all, use fallback immediately
+        const fallbackEncoding = FALLBACK_MAP[char];
+        if (fallbackEncoding) {
+          result += fallbackEncoding;
+        } else {
+          result += char;
+        }
+      } else if (usedPositionsForChar.size >= occurrenceCount) {
+        // All occurrences have been used, reset and reuse positions
         usedPositions.set(char, new Set<number>());
-        
+
         // Try to find the character again with reset positions
         for (let i = 0; i < sourceLength; i++) {
           const pos = (startPos + i) % sourceLength;
@@ -229,31 +258,45 @@ export function encodeMessage(message: string, textSource: TextSource, keyword: 
             break;
           }
         }
-        
+
         if (found) {
-          // Mark this position as used for this character
           usedPositionsForChar.add(foundIndex);
-          
-          // Convert the index to a tuple of characters
           result += numberToTuple(foundIndex);
-          continue;
+        } else {
+          // Should not happen, but fallback just in case
+          const fallbackEncoding = FALLBACK_MAP[char];
+          if (fallbackEncoding) {
+            result += fallbackEncoding;
+          } else {
+            result += char;
+          }
         }
-      }
-      
-      // If still not found or no occurrences in text, use the fallback
-      const fallbackEncoding = FALLBACK_MAP[char];
-      if (fallbackEncoding) {
-        result += fallbackEncoding;
       } else {
-        // If no fallback available, keep the character as is
-        result += char;
+        // Character exists but not found this pass, use fallback
+        const fallbackEncoding = FALLBACK_MAP[char];
+        if (fallbackEncoding) {
+          result += fallbackEncoding;
+        } else {
+          result += char;
+        }
       }
     } else {
       // Mark this position as used for this character
       usedPositionsForChar.add(foundIndex);
       
-      // Convert the index to a tuple of characters
-      result += numberToTuple(foundIndex);
+      const alphabetLength = COMBINED_ALPHABET.length;
+      const maxIndex = alphabetLength * alphabetLength - 1;
+      const relativeIndex = (foundIndex - (seed % sourceLength) + sourceLength) % sourceLength;
+      if (relativeIndex > maxIndex) {
+        const fallbackEncoding = FALLBACK_MAP[char];
+        if (fallbackEncoding) {
+          result += fallbackEncoding;
+        } else {
+          result += char;
+        }
+      } else {
+        result += numberToTuple(relativeIndex);
+      }
     }
   }
   
@@ -278,55 +321,42 @@ export function decodeMessage(encodedMessage: string, textSource: TextSource, ke
   const sourceLength = sourceText.length;
   
   let result = '';
-  let i = 0;
   
   // Process each character in the encoded message
+  let decoded = '';
+  let i = 0;
   while (i < encodedMessage.length) {
-    const char = encodedMessage[i];
-    
-    // Keep spaces and punctuation as is
-    if (char === ' ' || !/[a-zA-ZА-Яа-яΑ-Ωα-ω⁂]/.test(char)) {
-      result += char;
-      i++;
-      continue;
-    }
-    
-    // Check if this is a fallback encoding
-    if (char === FALLBACK_INDICATOR && i + 1 < encodedMessage.length) {
-      const fallbackEncoding = encodedMessage.substring(i, i + 2);
-      const originalChar = getCharacterFromFallback(fallbackEncoding);
-      
-      if (originalChar) {
-        result += originalChar;
-        i += 2; // Move past the fallback encoding
+    const char1 = encodedMessage[i];
+    const char2 = encodedMessage[i + 1];
+
+    // Check if both characters are in the cipher alphabet
+    if (
+      i + 1 < encodedMessage.length &&
+      (char1 === FALLBACK_INDICATOR ||
+       (COMBINED_ALPHABET.includes(char1) && COMBINED_ALPHABET.includes(char2)))
+    ) {
+      const pair = char1 + char2;
+
+      if (pair.startsWith(FALLBACK_INDICATOR)) {
+        const originalChar = getCharacterFromFallback(pair);
+        decoded += originalChar ? originalChar : pair;
       } else {
-        // If not a valid fallback, keep the character as is
-        result += char;
-        i++;
+        const index = tupleToNumber(pair);
+        const startPos = seed % sourceLength;
+        const foundIndex = (index + startPos) % sourceLength;
+        if (index >= 0 && index < sourceLength) {
+          decoded += sourceText[foundIndex];
+        } else {
+          decoded += pair;
+        }
       }
-      continue;
-    }
-    
-    // Check if we have enough characters for a tuple
-    if (i + 1 < encodedMessage.length) {
-      const tuple = encodedMessage.substring(i, i + 2);
-      const index = tupleToNumber(tuple);
-      
-      if (index >= 0 && index < sourceLength) {
-        // Get the exact character at the index (preserving case)
-        result += sourceText[index];
-        i += 2; // Move past the tuple
-      } else {
-        // If not a valid tuple, keep the character as is
-        result += char;
-        i++;
-      }
+      i += 2;
     } else {
-      // Not enough characters left for a tuple
-      result += char;
-      i++;
+      decoded += char1;
+      i += 1;
     }
   }
+  result = decoded;
   
   return result;
 }
