@@ -15,7 +15,6 @@
 
   onMount(() => {
     EventBus.on(Events.SELECT_RECIPE, (receivedRecipe) => {
-      console.log('Selected recipe:', receivedRecipe);
       recipe = receivedRecipe as CraftingRecipe;
       isEditing = false;
     });
@@ -44,7 +43,6 @@
 
   async function onDeleteRecipe() {
     if (!recipe) return;
-    console.log('Deleting recipe:', recipe);
     await deleteRecipe(recipe.id);
     recipe = null;
 

@@ -66,7 +66,7 @@ export const useRest = () => {
           },
         });
       } else if (ROUTES[apiRoute].method === 'PUT') {
-        console.log('PUT', apiRoute, apiDomain + route);
+        // console.log('PUT', apiRoute, apiDomain + route);
         response = await axios.put(apiDomain + route, params, {
           timeout: 0, // Disable timeout on the client side
           headers: {
@@ -75,7 +75,7 @@ export const useRest = () => {
           },
         });
       } else if (ROUTES[apiRoute].method === 'DELETE') {
-        console.log('DELETE', apiRoute, apiDomain + route);
+        // console.log('DELETE', apiRoute, apiDomain + route);
         response = await axios.delete(apiDomain + route, {
           timeout: 0, // Disable timeout on the client side
           headers: {
