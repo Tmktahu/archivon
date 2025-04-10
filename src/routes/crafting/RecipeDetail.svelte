@@ -81,50 +81,60 @@
   </div>
 
   {#if isEditing}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-      <div>
-        <h4 class="text-brass-mid/90 text-sm uppercase tracking-wider mb-1 font-semibold">Name</h4>
-        <input class="w-full p-1 bg-zinc-800/40 border border-zinc-700/40 text-white" bind:value={recipe.name} />
-      </div>
-      <div>
-        <h4 class="text-brass-mid/90 text-sm uppercase tracking-wider mb-1 font-semibold">Amount</h4>
-        <input type="number" class="w-full p-1 bg-zinc-800/40 border border-zinc-700/40 text-white" bind:value={recipe.amount} />
-      </div>
-      <div>
-        <h4 class="text-brass-mid/90 text-sm uppercase tracking-wider mb-1 font-semibold">Category</h4>
-        <select class="w-full p-1 bg-zinc-800/40 border border-zinc-700/40 text-white" bind:value={recipe.category}>
-          {#each Object.values(CRAFTING_CATEGORIES) as category}
-            <option value={category}>{category}</option>
-          {/each}
-        </select>
-      </div>
-      <div>
-        <h4 class="text-brass-mid/90 text-sm uppercase tracking-wider mb-1 font-semibold">Job</h4>
-        <select class="w-full p-1 bg-zinc-800/40 border border-zinc-700/40 text-white" bind:value={recipe.job}>
-          {#each Object.values(CRAFTING_JOBS) as job}
-            <option value={job}>{job}</option>
-          {/each}
-        </select>
-      </div>
-      <div>
-        <h4 class="text-brass-mid/90 text-sm uppercase tracking-wider mb-1 font-semibold">Experience</h4>
-        <input type="number" class="w-full p-1 bg-zinc-800/40 border border-zinc-700/40 text-white" bind:value={recipe.experience} />
-      </div>
-      <div class="md:col-span-2">
-        <h4 class="text-brass-mid/90 text-sm uppercase tracking-wider mb-1 font-semibold">Components</h4>
-        {#each recipe.components as component, index}
-          <div class="flex gap-2 mb-1">
-            <input class="flex-1 p-1 bg-zinc-800/40 border border-zinc-700/40 text-white" placeholder="Component Name" bind:value={component.name} />
-            <input type="number" class="w-20 p-1 bg-zinc-800/40 border border-zinc-700/40 text-white" placeholder="Amount" bind:value={component.amount} />
-            <button type="button" class="text-silver-500/80 hover:text-silver-300/90 transition-colors text-xs" on:click={() => removeComponentFromRecipe(index)} title="Remove Component">✖</button>
+    <div class="flex flex-col flex-grow min-h-0 overflow-hidden">
+      <div class="flex flex-col flex-grow min-h-0 overflow-hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3 overflow-hidden">
+          <div>
+            <h4 class="text-brass-mid/90 text-xs uppercase tracking-wider mb-1 font-semibold">Name</h4>
+            <input class="w-full bg-zinc-800/40 border border-zinc-700/50 p-1.5 text-white/90 placeholder-silver-600/50 focus:outline-none focus:border-brass-mid/70 typewriter text-sm" bind:value={recipe.name} />
           </div>
-        {/each}
-        <button type="button" class="mt-2 px-2 py-1 bg-zinc-700/40 hover:bg-zinc-700/60 text-brass-light/80 border border-zinc-700/50 text-xs transition-colors" on:click={addComponentToRecipe}>+ ADD COMPONENT</button>
+          <div>
+            <h4 class="text-brass-mid/90 text-xs uppercase tracking-wider mb-1 font-semibold">Amount</h4>
+            <input type="number" class="w-full bg-zinc-800/40 border border-zinc-700/50 p-1.5 text-white/90 focus:outline-none focus:border-brass-mid/70 typewriter text-sm" bind:value={recipe.amount} />
+          </div>
+          <div>
+            <h4 class="text-brass-mid/90 text-xs uppercase tracking-wider mb-1 font-semibold">Category</h4>
+            <select class="w-full bg-zinc-800/40 border border-zinc-700/50 p-1.5 text-white/90 appearance-none focus:outline-none focus:border-brass-mid/70 typewriter select-custom text-sm" bind:value={recipe.category}>
+              {#each Object.values(CRAFTING_CATEGORIES) as category}
+                <option value={category}>{category}</option>
+              {/each}
+            </select>
+          </div>
+          <div>
+            <h4 class="text-brass-mid/90 text-xs uppercase tracking-wider mb-1 font-semibold">Job</h4>
+            <select class="w-full bg-zinc-800/40 border border-zinc-700/50 p-1.5 text-white/90 appearance-none focus:outline-none focus:border-brass-mid/70 typewriter select-custom text-sm" bind:value={recipe.job}>
+              {#each Object.values(CRAFTING_JOBS) as job}
+                <option value={job}>{job}</option>
+              {/each}
+            </select>
+          </div>
+          <div>
+            <h4 class="text-brass-mid/90 text-xs uppercase tracking-wider mb-1 font-semibold">Experience</h4>
+            <input type="number" class="w-full bg-zinc-800/40 border border-zinc-700/50 p-1.5 text-white/90 focus:outline-none focus:border-brass-mid/70 typewriter text-sm" bind:value={recipe.experience} />
+          </div>
+          <div class="md:col-span-2 flex flex-col flex-grow min-h-0 overflow-hidden">
+            <div class="flex-shrink-0 flex justify-between items-center mb-1">
+              <h4 class="text-brass-mid/90 text-xs uppercase tracking-wider font-semibold">Components</h4>
+              <button type="button" class="text-xs px-2 py-0.5 bg-zinc-700/60 text-brass-light/90 hover:bg-zinc-700/80 transition-colors" on:click={addComponentToRecipe}>+ ADD</button>
+            </div>
+            <div class="overflow-y-auto flex-grow min-h-0 space-y-2">
+              {#each recipe.components as component, index}
+                <div class="flex items-center space-x-2 p-1.5 border border-zinc-700/50 bg-zinc-800/30 hover:bg-zinc-700/20 transition-colors">
+                  <input class="flex-grow bg-zinc-800/40 border border-zinc-700/50 p-1 text-white/90 focus:outline-none focus:border-brass-mid/70 typewriter text-xs" placeholder="Component Name" bind:value={component.name} />
+                  <input type="number" class="w-16 bg-zinc-800/40 border border-zinc-700/50 p-1 text-brass-light/90 focus:outline-none focus:border-brass-mid/70 typewriter text-xs" placeholder="Qty" bind:value={component.amount} />
+                  <button type="button" class="text-silver-500/80 hover:text-silver-300/90 transition-colors text-xs" on:click={() => removeComponentFromRecipe(index)} title="Remove Component">✖</button>
+                </div>
+              {/each}
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="mt-4 flex gap-2">
-      <button class="bg-zinc-800/60 border border-zinc-700/50 py-1.5 px-4 text-brass-light/90 hover:text-brass-light/90 hover:bg-zinc-800/80 transition-colors text-xs tracking-wider typewriter" on:click={saveEditedRecipe}>Save</button>
-      <button class="bg-zinc-800/60 border border-zinc-700/50 py-1.5 px-4 text-brass-light/90 hover:text-brass-light/90 hover:bg-zinc-800/80 transition-colors text-xs tracking-wider typewriter" on:click={cancelEditing}>Cancel</button>
+      <div class="flex-shrink-0 border-t border-zinc-700/50 pt-3 mt-3">
+        <div class="flex justify-end gap-2">
+          <button class="bg-zinc-800/60 border border-zinc-700/50 py-1.5 px-4 text-brass-light/90 hover:text-brass-light/90 hover:bg-zinc-800/80 transition-colors text-xs tracking-wider typewriter" on:click={saveEditedRecipe}>Save</button>
+          <button class="bg-zinc-800/60 border border-zinc-700/50 py-1.5 px-4 text-brass-light/90 hover:text-brass-light/90 hover:bg-zinc-800/80 transition-colors text-xs tracking-wider typewriter" on:click={cancelEditing}>Cancel</button>
+        </div>
+      </div>
     </div>
   {:else}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">

@@ -16,11 +16,11 @@
   }
 
   function addComponent() {
-    dispatch('addComponent');
+    newRecipeComponents = [...newRecipeComponents, { name: '', amount: 1 }];
   }
 
   function removeComponent(index: number) {
-    dispatch('removeComponent', index);
+    newRecipeComponents = newRecipeComponents.filter((_, i) => i !== index);
   }
 
   function updateComponentName(index: number, value: string) {
