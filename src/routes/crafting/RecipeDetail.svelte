@@ -24,7 +24,7 @@
   let isEditing = false;
 
   const dispatch = createEventDispatcher();
-  const { updateRecipe, deleteRecipe: deleteRecipeApi } = useCrafting();
+  const { updateRecipe, deleteRecipe } = useCrafting();
   const { getItemsByName } = useItems();
 
   function startEditing() {
@@ -42,10 +42,13 @@
     EventBus.emit(Events.UPDATE_RECIPE_LIST);
   }
 
-  async function deleteRecipe() {
+  async function onDeleteRecipe() {
     if (!recipe) return;
-    await deleteRecipeApi(recipe.id);
+    console.log('Deleting recipe:', recipe);
+    await deleteRecipe(recipe.id);
     recipe = null;
+
+    EventBus.emit(Events.UPDATE_RECIPE_LIST);
   }
 
   function clearSelectedRecipe() {
@@ -102,7 +105,7 @@
       <h3 class="text-lg text-brass-light/90 font-display tracking-wider">{recipe!.name}</h3>
       <div class="flex items-center">
         {#if isAdmin}
-          <button class="text-red-400/80 hover:text-red-400 transition-colors text-sm" on:click={deleteRecipe} title="Delete Recipe"> ☠ </button>
+          <button class="text-red-400/80 hover:text-red-400 transition-colors text-sm" on:click={onDeleteRecipe} title="Delete Recipe"> ☠ </button>
         {/if}
         <button class="text-silver-500/80 hover:text-silver-300/90 transition-colors text-sm ml-2" on:click={startEditing} title="Edit Recipe"> ✎ </button>
         <button class="text-silver-500/80 hover:text-silver-300/90 transition-colors text-base ml-2" on:click={clearSelectedRecipe} title="Close Recipe"> ⨯ </button>

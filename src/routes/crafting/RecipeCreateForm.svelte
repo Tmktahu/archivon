@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import { CRAFTING_CATEGORIES, CRAFTING_JOBS } from '$lib/models/useConstants';
+  import { useCrafting } from '$lib/models/useCrafting';
 
   export let newRecipeName = '';
   export let newRecipeAmount = 1;
@@ -8,11 +8,31 @@
   export let newRecipeJob = CRAFTING_JOBS.NONE;
   export let newRecipeExperience = 0;
   export let newRecipeComponents = [{ name: '', amount: 1 }];
+  const { createRecipe } = useCrafting();
 
-  const dispatch = createEventDispatcher();
+  async function submit() {
+    const recipeData = {
+      name: newRecipeName,
+      amount: newRecipeAmount,
+      category: newRecipeCategory,
+      job: newRecipeJob,
+      experience: newRecipeExperience,
+      components: newRecipeComponents,
+    };
 
-  function submit() {
-    dispatch('submitNewRecipe');
+    try {
+      await createRecipe(recipeData);
+
+      // Reset form after successful creation
+      newRecipeName = '';
+      newRecipeAmount = 1;
+      newRecipeCategory = CRAFTING_CATEGORIES.BASIC;
+      newRecipeJob = CRAFTING_JOBS.NONE;
+      newRecipeExperience = 0;
+      newRecipeComponents = [{ name: '', amount: 1 }];
+    } catch (error) {
+      console.error('Failed to create recipe:', error);
+    }
   }
 
   function addComponent() {
@@ -24,11 +44,13 @@
   }
 
   function updateComponentName(index: number, value: string) {
-    dispatch('updateComponentName', { index, value });
+    newRecipeComponents[index].name = value;
+    newRecipeComponents = [...newRecipeComponents]; // Trigger reactivity
   }
 
   function updateComponentAmount(index: number, value: number) {
-    dispatch('updateComponentAmount', { index, value });
+    newRecipeComponents[index].amount = value;
+    newRecipeComponents = [...newRecipeComponents]; // Trigger reactivity
   }
 </script>
 

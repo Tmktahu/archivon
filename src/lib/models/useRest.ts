@@ -1,19 +1,19 @@
 import axios from 'axios';
-import { API_ROUTES } from '$lib/models/useConstants';
+import { API_ROUTES, API_ROUTE_PATHS } from '$lib/models/useConstants';
 
 const ROUTES: { [key: string]: { route: Function; method: string } } = {
-  [API_ROUTES.getCraftingRecipes]: { method: 'GET', route: () => API_ROUTES.getCraftingRecipes },
-  [API_ROUTES.getCraftingRecipe]: { method: 'GET', route: (params: any) => API_ROUTES.getCraftingRecipe.replace(':id', params.id) },
-  [API_ROUTES.createCraftingRecipe]: { method: 'POST', route: () => API_ROUTES.createCraftingRecipe },
-  [API_ROUTES.deleteCraftingRecipe]: { method: 'DELETE', route: (params: any) => API_ROUTES.deleteCraftingRecipe.replace(':id', params.id) },
-  [API_ROUTES.updateCraftingRecipe]: { method: 'PUT', route: (params: any) => API_ROUTES.updateCraftingRecipe.replace(':id', params.id) },
+  [API_ROUTES.getCraftingRecipes]: { method: 'GET', route: () => API_ROUTE_PATHS[API_ROUTES.getCraftingRecipes] },
+  [API_ROUTES.getCraftingRecipe]: { method: 'GET', route: (params: any) => API_ROUTE_PATHS[API_ROUTES.getCraftingRecipe].replace(':id', params.id) },
+  [API_ROUTES.createCraftingRecipe]: { method: 'POST', route: () => API_ROUTE_PATHS[API_ROUTES.createCraftingRecipe] },
+  [API_ROUTES.deleteCraftingRecipe]: { method: 'DELETE', route: (params: any) => API_ROUTE_PATHS[API_ROUTES.deleteCraftingRecipe].replace(':id', params.id) },
+  [API_ROUTES.updateCraftingRecipe]: { method: 'PUT', route: (params: any) => API_ROUTE_PATHS[API_ROUTES.updateCraftingRecipe].replace(':id', params.id) },
 
-  [API_ROUTES.getItems]: { method: 'GET', route: () => API_ROUTES.getItems },
-  [API_ROUTES.getItem]: { method: 'GET', route: (params: any) => API_ROUTES.getItem.replace(':id', params.id) },
-  [API_ROUTES.createItem]: { method: 'POST', route: () => API_ROUTES.createItem },
-  [API_ROUTES.deleteItem]: { method: 'DELETE', route: (params: any) => API_ROUTES.deleteItem.replace(':id', params.id) },
-  [API_ROUTES.updateItem]: { method: 'PUT', route: (params: any) => API_ROUTES.updateItem.replace(':id', params.id) },
-  [API_ROUTES.getItemsByName]: { method: 'POST', route: () => API_ROUTES.getItemsByName },
+  [API_ROUTES.getItems]: { method: 'GET', route: () => API_ROUTE_PATHS[API_ROUTES.getItems] },
+  [API_ROUTES.getItem]: { method: 'GET', route: (params: any) => API_ROUTE_PATHS[API_ROUTES.getItem].replace(':id', params.id) },
+  [API_ROUTES.createItem]: { method: 'POST', route: () => API_ROUTE_PATHS[API_ROUTES.createItem] },
+  [API_ROUTES.deleteItem]: { method: 'DELETE', route: (params: any) => API_ROUTE_PATHS[API_ROUTES.deleteItem].replace(':id', params.id) },
+  [API_ROUTES.updateItem]: { method: 'PUT', route: (params: any) => API_ROUTE_PATHS[API_ROUTES.updateItem].replace(':id', params.id) },
+  [API_ROUTES.getItemsByName]: { method: 'POST', route: () => API_ROUTE_PATHS[API_ROUTES.getItemsByName] },
 };
 
 const queryQueue: {
@@ -66,7 +66,7 @@ export const useRest = () => {
           },
         });
       } else if (ROUTES[apiRoute].method === 'PUT') {
-        // console.log('PUT', apiRoute, apiDomain + route);
+        console.log('PUT', apiRoute, apiDomain + route);
         response = await axios.put(apiDomain + route, params, {
           timeout: 0, // Disable timeout on the client side
           headers: {
@@ -75,7 +75,7 @@ export const useRest = () => {
           },
         });
       } else if (ROUTES[apiRoute].method === 'DELETE') {
-        // console.log('DELETE', apiRoute, apiDomain + route);
+        console.log('DELETE', apiRoute, apiDomain + route);
         response = await axios.delete(apiDomain + route, {
           timeout: 0, // Disable timeout on the client side
           headers: {

@@ -1,16 +1,31 @@
 export const API_ROUTES = {
-  getCraftingRecipes: 'reddead/craftingRecipes',
-  getCraftingRecipe: 'reddead/craftingRecipe/:id',
-  createCraftingRecipe: 'reddead/craftingRecipe',
-  deleteCraftingRecipe: 'reddead/craftingRecipe/:id',
-  updateCraftingRecipe: 'reddead/craftingRecipe/:id',
+  getCraftingRecipes: 'getCraftingRecipes',
+  getCraftingRecipe: 'getCraftingRecipe',
+  createCraftingRecipe: 'createCraftingRecipe',
+  deleteCraftingRecipe: 'deleteCraftingRecipe',
+  updateCraftingRecipe: 'updateCraftingRecipe',
 
-  getItems: 'reddead/items',
-  getItem: 'reddead/item/:id',
-  createItem: 'reddead/item',
-  deleteItem: 'reddead/item/:id',
-  updateItem: 'reddead/item/:id',
-  getItemsByName: 'reddead/itemsByName',
+  getItems: 'getItems',
+  getItem: 'getItem',
+  createItem: 'createItem',
+  deleteItem: 'deleteItem',
+  updateItem: 'updateItem',
+  getItemsByName: 'getItemsByName',
+};
+
+export const API_ROUTE_PATHS = {
+  [API_ROUTES.getCraftingRecipes]: 'reddead/craftingRecipes',
+  [API_ROUTES.getCraftingRecipe]: 'reddead/craftingRecipe/:id',
+  [API_ROUTES.createCraftingRecipe]: 'reddead/craftingRecipe',
+  [API_ROUTES.deleteCraftingRecipe]: 'reddead/craftingRecipe/:id',
+  [API_ROUTES.deleteCraftingRecipe]: 'reddead/craftingRecipe/:id',
+
+  [API_ROUTES.getItems]: 'reddead/items',
+  [API_ROUTES.getItem]: 'reddead/item/:id',
+  [API_ROUTES.createItem]: 'reddead/item',
+  [API_ROUTES.deleteItem]: 'reddead/item/:id',
+  [API_ROUTES.updateItem]: 'reddead/item/:id',
+  [API_ROUTES.getItemsByName]: 'reddead/itemsByName',
 };
 
 /**
