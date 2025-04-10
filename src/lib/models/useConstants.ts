@@ -4,6 +4,13 @@ export const API_ROUTES = {
   createCraftingRecipe: 'reddead/craftingRecipe',
   deleteCraftingRecipe: 'reddead/craftingRecipe/:id',
   updateCraftingRecipe: 'reddead/craftingRecipe/:id',
+
+  getItems: 'reddead/items',
+  getItem: 'reddead/item/:id',
+  createItem: 'reddead/item',
+  deleteItem: 'reddead/item/:id',
+  updateItem: 'reddead/item/:id',
+  getItemsByName: 'reddead/itemsByName',
 };
 
 /**
@@ -21,76 +28,76 @@ export interface Book {
  * Available books for cipher encoding/decoding
  */
 export const AVAILABLE_BOOKS: Book[] = [
-  { 
-    id: 'flowers', 
-    name: 'The Language of Flowers', 
+  {
+    id: 'flowers',
+    name: 'The Language of Flowers',
     author: 'Kate Greenaway',
     filename: 'flowers.txt',
-    description: 'A Victorian-era guide to the symbolic meanings of flowers and plants.'
+    description: 'A Victorian-era guide to the symbolic meanings of flowers and plants.',
   },
-  { 
-    id: 'alice', 
-    name: 'Alice\'s Adventures in Wonderland', 
+  {
+    id: 'alice',
+    name: "Alice's Adventures in Wonderland",
     author: 'Lewis Carroll',
     filename: 'alice.txt',
-    description: 'The classic tale of a girl named Alice who falls through a rabbit hole into a fantasy world.'
+    description: 'The classic tale of a girl named Alice who falls through a rabbit hole into a fantasy world.',
   },
-  { 
-    id: 'dracula', 
-    name: 'Dracula', 
+  {
+    id: 'dracula',
+    name: 'Dracula',
     author: 'Bram Stoker',
     filename: 'dracula.txt',
-    description: 'The classic Gothic horror novel about Count Dracula\'s attempt to move from Transylvania to England.'
+    description: "The classic Gothic horror novel about Count Dracula's attempt to move from Transylvania to England.",
   },
-  { 
-    id: 'grimm', 
-    name: 'Grimm\'s Fairy Tales', 
+  {
+    id: 'grimm',
+    name: "Grimm's Fairy Tales",
     author: 'The Brothers Grimm',
     filename: 'grimm.txt',
-    description: 'A collection of fairy tales by the German brothers Jacob and Wilhelm Grimm.'
+    description: 'A collection of fairy tales by the German brothers Jacob and Wilhelm Grimm.',
   },
-  { 
-    id: 'moby', 
-    name: 'Moby Dick', 
+  {
+    id: 'moby',
+    name: 'Moby Dick',
     author: 'Herman Melville',
     filename: 'moby.txt',
-    description: 'The story of Captain Ahab\'s quest for revenge on the white whale, Moby Dick.'
+    description: "The story of Captain Ahab's quest for revenge on the white whale, Moby Dick.",
   },
-  { 
-    id: 'odyssey', 
-    name: 'The Odyssey', 
+  {
+    id: 'odyssey',
+    name: 'The Odyssey',
     author: 'Homer',
     filename: 'odyssey.txt',
-    description: 'The ancient Greek epic poem following Odysseus\'s journey home after the Trojan War.'
+    description: "The ancient Greek epic poem following Odysseus's journey home after the Trojan War.",
   },
-  { 
-    id: 'bible', 
-    name: 'The Bible', 
+  {
+    id: 'bible',
+    name: 'The Bible',
     author: 'Various',
     filename: 'bible.txt',
-    description: 'A collection of religious texts sacred in Christianity, Judaism, and other religions.'
+    description: 'A collection of religious texts sacred in Christianity, Judaism, and other religions.',
   },
-  { 
-    id: 'solomon', 
-    name: 'The Key of Solomon', 
+  {
+    id: 'solomon',
+    name: 'The Key of Solomon',
     author: 'Unknown',
     filename: 'solomon.txt',
-    description: 'A medieval grimoire attributed to King Solomon containing instructions for summoning spirits.'
+    description: 'A medieval grimoire attributed to King Solomon containing instructions for summoning spirits.',
   },
-  { 
-    id: 'sherlock', 
-    name: 'The Adventures of Sherlock Holmes', 
+  {
+    id: 'sherlock',
+    name: 'The Adventures of Sherlock Holmes',
     author: 'Arthur Conan Doyle',
     filename: 'sherlock.txt',
-    description: 'A collection of twelve short stories featuring the famous detective Sherlock Holmes.'
+    description: 'A collection of twelve short stories featuring the famous detective Sherlock Holmes.',
   },
-  { 
-    id: 'cowboy', 
-    name: 'The Log of a Cowboy', 
+  {
+    id: 'cowboy',
+    name: 'The Log of a Cowboy',
     author: 'Andy Adams',
     filename: 'cowboy.txt',
-    description: 'A narrative of the old trail days, following cattle drives in the American West.'
-  }
+    description: 'A narrative of the old trail days, following cattle drives in the American West.',
+  },
 ];
 
 /**
@@ -116,7 +123,7 @@ export const CRAFTING_CATEGORIES = {
   MEDICAL: 'Medical',
   SURVIVAL: 'Survival',
   TAILORING: 'Tailoring',
-  GUNSMITHING: 'Gunsmithing'
+  GUNSMITHING: 'Gunsmithing',
 };
 
 /**
@@ -126,5 +133,5 @@ export const CRAFTING_JOBS = {
   NONE: 'None',
   BLACKSMITH: 'Blacksmith',
   GUNSMITH: 'Gunsmith',
-  DOCTOR: 'Doctor'
+  DOCTOR: 'Doctor',
 };

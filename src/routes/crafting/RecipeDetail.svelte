@@ -1,6 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import type { CraftingRecipe } from '$lib/models/useCrafting';
+  import type { Item } from '$lib/models/useItems';
   import { CRAFTING_CATEGORIES, CRAFTING_JOBS } from '$lib/models/useConstants';
   import { useCrafting } from '$lib/models/useCrafting';
   import RecipeCreateForm from './RecipeCreateForm.svelte';
@@ -10,6 +11,7 @@
 
   import { onMount } from 'svelte';
   import { EventBus, Events } from '$lib/eventbus';
+  import { useItems } from '$lib/models/useItems';
 
   onMount(() => {
     EventBus.on(Events.SELECT_RECIPE, (receivedRecipe) => {
@@ -23,6 +25,7 @@
 
   const dispatch = createEventDispatcher();
   const { updateRecipe, deleteRecipe: deleteRecipeApi } = useCrafting();
+  const { getItemsByName } = useItems();
 
   function startEditing() {
     isEditing = true;
@@ -58,6 +61,33 @@
   function removeComponentFromRecipe(index: number) {
     if (!recipe) return;
     recipe.components.splice(index, 1);
+  }
+  let componentItems: Item[] = [];
+  let quantity: number = 1;
+  let markup: number = 1;
+
+  $: finalPrice = totalNpcPrice * quantity * markup;
+  let totalNpcPrice: number = 0;
+
+  // Fetch component item data and calculate total NPC price whenever recipe changes
+  $: if (recipe && recipe.components && recipe.components.length > 0) {
+    const componentNames = recipe.components.map((c) => c.name).filter(Boolean);
+    if (componentNames.length > 0) {
+      getItemsByName(componentNames).then((items) => {
+        componentItems = items;
+        totalNpcPrice = recipe!.components.reduce((sum, component) => {
+          const item = items.find((i) => i.name === component.name);
+          if (!item) return sum;
+          return sum + item.npcPrice * (component.amount || 1);
+        }, 0);
+      });
+    } else {
+      componentItems = [];
+      totalNpcPrice = 0;
+    }
+  } else {
+    componentItems = [];
+    totalNpcPrice = 0;
   }
 </script>
 
@@ -210,10 +240,20 @@
         {#if recipe.components && recipe.components.length > 0}
           <ul class="space-y-1.5 mt-2">
             {#each recipe.components as component}
+              {@const item = componentItems.find((i) => i.name === component.name)}
               {#if component}
-                <li class="flex items-center p-1.5 border-b border-zinc-700/50 hover:bg-zinc-700/20 transition-colors">
-                  <span class="text-brass-light/90 mr-2 text-base">{component.amount || 1} ×</span>
-                  <span class="text-white/90 text-base">{component.name || 'Unknown Component'}</span>
+                <li class="flex items-center justify-between p-1.5 border-b border-zinc-700/50 hover:bg-zinc-700/20 transition-colors">
+                  <div>
+                    <span class="text-brass-light/90 mr-2 text-base">{component.amount || 1} ×</span>
+                    <span class="text-white/90 text-base">{component.name || 'Unknown Component'}</span>
+                  </div>
+                  <div class="text-silver-400/90 text-sm ml-2 whitespace-nowrap">
+                    {#if item}
+                      ＄{item.npcPrice.toFixed(2)} × {component.amount || 1} = ＄{(item.npcPrice * (component.amount || 1)).toFixed(2)}
+                    {:else}
+                      (Item not found)
+                    {/if}
+                  </div>
                 </li>
               {/if}
             {/each}
@@ -221,6 +261,38 @@
         {:else}
           <p class="text-silver-500/80 italic text-base">No components required</p>
         {/if}
+      </div>
+
+      <div class="mt-auto border-t border-zinc-700/50 p-4 bg-zinc-900/50 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex flex-col md:flex-row md:items-center gap-4 flex-grow">
+          <div>
+            <label class="block text-silver-400/90 text-xs uppercase tracking-wider mb-1">Quantity</label>
+            <input
+              type="number"
+              min="1"
+              bind:value={quantity}
+              class="w-24 bg-zinc-800/40 border border-zinc-700/50 p-1.5 text-white/90 focus:outline-none focus:border-brass-mid/70 typewriter text-sm"
+            />
+          </div>
+          <div>
+            <label class="block text-silver-400/90 text-xs uppercase tracking-wider mb-1">Markup</label>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              bind:value={markup}
+              class="w-24 bg-zinc-800/40 border border-zinc-700/50 p-1.5 text-white/90 focus:outline-none focus:border-brass-mid/70 typewriter text-sm"
+            />
+          </div>
+          <div>
+            <h4 class="text-brass-mid/90 text-xs uppercase tracking-wider mb-1 font-semibold">Total NPC Price (per recipe)</h4>
+            <p class="text-white/90 text-base">＄{totalNpcPrice.toFixed(2)}</p>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-brass-mid/90 text-xs uppercase tracking-wider mb-1 font-semibold">Final Selling Price</h4>
+          <p class="text-brass-light/90 text-lg font-bold">＄{finalPrice.toFixed(2)}</p>
+        </div>
       </div>
     {/if}
   </div>

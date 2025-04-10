@@ -7,6 +7,13 @@ const ROUTES: { [key: string]: { route: Function; method: string } } = {
   [API_ROUTES.createCraftingRecipe]: { method: 'POST', route: () => API_ROUTES.createCraftingRecipe },
   [API_ROUTES.deleteCraftingRecipe]: { method: 'DELETE', route: (params: any) => API_ROUTES.deleteCraftingRecipe.replace(':id', params.id) },
   [API_ROUTES.updateCraftingRecipe]: { method: 'PUT', route: (params: any) => API_ROUTES.updateCraftingRecipe.replace(':id', params.id) },
+
+  [API_ROUTES.getItems]: { method: 'GET', route: () => API_ROUTES.getItems },
+  [API_ROUTES.getItem]: { method: 'GET', route: (params: any) => API_ROUTES.getItem.replace(':id', params.id) },
+  [API_ROUTES.createItem]: { method: 'POST', route: () => API_ROUTES.createItem },
+  [API_ROUTES.deleteItem]: { method: 'DELETE', route: (params: any) => API_ROUTES.deleteItem.replace(':id', params.id) },
+  [API_ROUTES.updateItem]: { method: 'PUT', route: (params: any) => API_ROUTES.updateItem.replace(':id', params.id) },
+  [API_ROUTES.getItemsByName]: { method: 'POST', route: () => API_ROUTES.getItemsByName },
 };
 
 const queryQueue: {
@@ -35,7 +42,7 @@ export const useRest = () => {
     try {
       const route = ROUTES[apiRoute] ? ROUTES[apiRoute].route(params) : apiRoute;
       let response = null;
-      
+
       // Get API domain from environment variables with a fallback
       const apiDomain = import.meta.env.VITE_API_DOMAIN || '';
 
