@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import { EventBus, Events } from '$lib/eventbus';
   import { CRAFTING_CATEGORIES } from '$lib/models/useConstants';
   import type { CraftingRecipe } from '$lib/models/useCrafting';
@@ -30,8 +29,6 @@
     filteredRecipes = data;
     loading = false;
   });
-
-  const dispatch = createEventDispatcher();
 
   function handleSelect(recipe: CraftingRecipe) {
     EventBus.emit(Events.SELECT_RECIPE, recipe);
