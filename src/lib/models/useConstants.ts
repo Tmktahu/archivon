@@ -2,7 +2,8 @@ export const API_ROUTES = {
   getCraftingRecipes: 'reddead/craftingRecipes',
   getCraftingRecipe: 'reddead/craftingRecipe/:id',
   createCraftingRecipe: 'reddead/craftingRecipe',
-  deleteCraftingRecipe: 'reddead/craftingRecipe/:id'
+  deleteCraftingRecipe: 'reddead/craftingRecipe/:id',
+  updateCraftingRecipe: 'reddead/craftingRecipe/:id',
 };
 
 /**

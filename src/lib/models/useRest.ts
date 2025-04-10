@@ -6,6 +6,7 @@ const ROUTES: { [key: string]: { route: Function; method: string } } = {
   [API_ROUTES.getCraftingRecipe]: { method: 'GET', route: (params: any) => API_ROUTES.getCraftingRecipe.replace(':id', params.id) },
   [API_ROUTES.createCraftingRecipe]: { method: 'POST', route: () => API_ROUTES.createCraftingRecipe },
   [API_ROUTES.deleteCraftingRecipe]: { method: 'DELETE', route: (params: any) => API_ROUTES.deleteCraftingRecipe.replace(':id', params.id) },
+  [API_ROUTES.updateCraftingRecipe]: { method: 'PUT', route: (params: any) => API_ROUTES.updateCraftingRecipe.replace(':id', params.id) },
 };
 
 const queryQueue: {

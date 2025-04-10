@@ -23,6 +23,7 @@
   "type": "module",
   "dependencies": {
     "@sveltejs/adapter-static": "^3.0.8",
-    "axios": "^1.8.4"
+    "axios": "^1.8.4",
+    "mitt": "^3.0.1"
   }
 }

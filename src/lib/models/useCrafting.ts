@@ -5,6 +5,7 @@ export interface CraftingComponent {
 }
 
 export interface CraftingRecipe {
+    id: string;
     name: string;
     amount: number;
     components: CraftingComponent[];
@@ -103,6 +104,26 @@ export const useCrafting = () => {
         addQuery(API_ROUTES.createCraftingRecipe, recipeData, () => {});
     };
 
+    const updateRecipe = async (recipeData: any) => {
+        // Validate the recipe
+        if (!recipeData.name || !recipeData.amount || !recipeData.category || !recipeData.job || recipeData.experience === null || !recipeData.components || !recipeData.components.length) {
+            console.error('Invalid recipe data:', recipeData);
+            return;
+        }
+
+        const inputData = {
+            id: recipeData.id,
+            name: recipeData.name,
+            amount: recipeData.amount,
+            experience: recipeData.experience,
+            category: recipeData.category,
+            job: recipeData.job,
+            components: JSON.stringify(recipeData.components)
+        }
+
+        addQuery(API_ROUTES.updateCraftingRecipe, inputData, () => {});
+    };
+
     // Function to delete a recipe
     const deleteRecipe = async (recipeId: string) => {
       addQuery(API_ROUTES.deleteCraftingRecipe, { id: recipeId }, () => {});
@@ -119,6 +140,7 @@ export const useCrafting = () => {
         getRecipesByAvailableComponents,
         getRecipesByComponent,
         createRecipe,
+        updateRecipe,
         deleteRecipe
     };
 };
