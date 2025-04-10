@@ -33,7 +33,10 @@
 </script>
 
 <div class="border-2 border-double border-zinc-700/50 bg-zinc-800/20 p-3 flex flex-col h-full relative">
-  <div class="absolute inset-x-0 top-8 bottom-8 bg-contain bg-center bg-no-repeat opacity-[0.01] pointer-events-none" style="background-image: url('/images/logo.png'); filter: sepia(100%) hue-rotate(10deg) saturate(400%);"></div>
+  <div
+    class="absolute inset-x-0 top-8 bottom-8 bg-contain bg-center bg-no-repeat opacity-[0.01] pointer-events-none"
+    style="background-image: url('/images/logo.png'); filter: sepia(100%) hue-rotate(10deg) saturate(400%);"
+  ></div>
 
   <h3 class="text-lg text-brass-light/90 font-display tracking-wider mb-3 border-b border-zinc-700/40 pb-2 relative z-10">Create New Recipe</h3>
 
@@ -41,8 +44,9 @@
     <form class="flex flex-col h-full" on:submit|preventDefault={submit}>
       <div class="flex-shrink-0">
         <div class="mb-2">
-          <label class="block text-brass-mid/90 text-xs uppercase tracking-wider mb-1 font-semibold">Recipe Name</label>
+          <label for="recipe-name" class="block text-brass-mid/90 text-xs uppercase tracking-wider mb-1 font-semibold">Recipe Name</label>
           <input
+            id="recipe-name"
             type="text"
             bind:value={newRecipeName}
             class="w-full bg-zinc-800/40 border border-zinc-700/50 p-1.5 text-white/90 placeholder-silver-600/50 focus:outline-none focus:border-brass-mid/70 typewriter text-sm"
@@ -53,8 +57,9 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
           <div>
-            <label class="block text-brass-mid/90 text-xs uppercase tracking-wider mb-1 font-semibold">Amount</label>
+            <label for="recipe-amount" class="block text-brass-mid/90 text-xs uppercase tracking-wider mb-1 font-semibold">Amount</label>
             <input
+              id="recipe-amount"
               type="number"
               bind:value={newRecipeAmount}
               min="1"
@@ -64,8 +69,9 @@
           </div>
 
           <div>
-            <label class="block text-brass-mid/90 text-xs uppercase tracking-wider mb-1 font-semibold">Experience</label>
+            <label for="recipe-experience" class="block text-brass-mid/90 text-xs uppercase tracking-wider mb-1 font-semibold">Experience</label>
             <input
+              id="recipe-experience"
               type="number"
               bind:value={newRecipeExperience}
               min="-1"
@@ -76,9 +82,10 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <div>
-            <label class="block text-brass-mid/90 text-xs uppercase tracking-wider mb-1 font-semibold">Category</label>
+            <label for="recipe-category" class="block text-brass-mid/90 text-xs uppercase tracking-wider mb-1 font-semibold">Category</label>
             <div class="relative">
               <select
+                id="recipe-category"
                 bind:value={newRecipeCategory}
                 class="w-full bg-zinc-800/40 border border-zinc-700/50 p-1.5 text-white/90 appearance-none focus:outline-none focus:border-brass-mid/70 typewriter select-custom text-sm"
                 required
@@ -94,9 +101,10 @@
           </div>
 
           <div>
-            <label class="block text-brass-mid/90 text-xs uppercase tracking-wider mb-1 font-semibold">Required Job</label>
+            <label for="recipe-job" class="block text-brass-mid/90 text-xs uppercase tracking-wider mb-1 font-semibold">Required Job</label>
             <div class="relative">
               <select
+                id="recipe-job"
                 bind:value={newRecipeJob}
                 class="w-full bg-zinc-800/40 border border-zinc-700/50 p-1.5 text-white/90 appearance-none focus:outline-none focus:border-brass-mid/70 typewriter select-custom text-sm"
               >
@@ -114,10 +122,8 @@
 
       <div class="flex flex-col flex-grow min-h-0 overflow-hidden">
         <div class="flex-shrink-0 flex justify-between items-center mb-1">
-          <label class="text-brass-mid/90 text-xs uppercase tracking-wider font-semibold">Components</label>
-          <button type="button" on:click={addComponent} class="text-xs px-2 py-0.5 bg-zinc-700/60 text-brass-light/90 hover:bg-zinc-700/80 transition-colors">
-            + ADD
-          </button>
+          <span class="text-brass-mid/90 text-xs uppercase tracking-wider font-semibold">Components</span>
+          <button type="button" on:click={addComponent} class="text-xs px-2 py-0.5 bg-zinc-700/60 text-brass-light/90 hover:bg-zinc-700/80 transition-colors"> + ADD </button>
         </div>
 
         <div class="overflow-y-auto flex-grow min-h-0 space-y-2">

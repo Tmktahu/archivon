@@ -13,17 +13,17 @@
   let activeTab = 'encode';
   let isLoading = false;
   let parsedBook = null;
-  
+
   // Custom dropdown state
   let isDropdownOpen = false;
   let selectedBookName = '';
-  
+
   // Computed values for occult visualization
   $: keywordSeed = keyword ? cipher.generateSeedFromKeyword(keyword) : 0;
   $: keywordLength = keyword ? keyword.length : 0;
   $: keywordHue = keywordSeed % 360; // Use the seed to determine a color hue
   $: keywordBrightness = Math.min(100, 40 + (keywordSeed % 60)); // Brightness based on seed
-  
+
   // Function to get occult symbol for a digit
   function getOccultSymbolForDigit(digit) {
     // Each digit gets a unique SVG path representing an occult symbol
@@ -37,16 +37,16 @@
       `<svg viewBox="0 0 24 24"><path d="M12,5 L17,12 L12,19 L7,12 Z" fill="none" stroke="currentColor" stroke-width="1"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="0.5"/></svg>`, // 6
       `<svg viewBox="0 0 24 24"><line x1="4" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="1"/><line x1="4" y1="20" x2="20" y2="4" stroke="currentColor" stroke-width="1"/><circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="0.5"/></svg>`, // 7
       `<svg viewBox="0 0 24 24"><path d="M12,4 L16,8 L16,16 L8,16 L8,8 Z" fill="none" stroke="currentColor" stroke-width="1"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="0.5"/></svg>`, // 8
-      `<svg viewBox="0 0 24 24"><path d="M8,8 L16,8 L16,16 L8,16 Z" fill="none" stroke="currentColor" stroke-width="1"/><path d="M6,6 L18,6 L18,18 L6,18 Z" fill="none" stroke="currentColor" stroke-width="0.5"/><line x1="12" y1="6" x2="12" y2="18" stroke="currentColor" stroke-width="0.5"/></svg>` // 9
+      `<svg viewBox="0 0 24 24"><path d="M8,8 L16,8 L16,16 L8,16 Z" fill="none" stroke="currentColor" stroke-width="1"/><path d="M6,6 L18,6 L18,18 L6,18 Z" fill="none" stroke="currentColor" stroke-width="0.5"/><line x1="12" y1="6" x2="12" y2="18" stroke="currentColor" stroke-width="0.5"/></svg>`, // 9
     ];
     return symbols[parseInt(digit)];
   }
-  
+
   // Toggle dropdown
   function toggleDropdown() {
     isDropdownOpen = !isDropdownOpen;
   }
-  
+
   // Close dropdown if clicked outside
   function handleClickOutside(event) {
     const dropdown = document.getElementById('custom-dropdown');
@@ -54,13 +54,13 @@
       isDropdownOpen = false;
     }
   }
-  
+
   // Select a book
   function selectBook(book) {
     selectedBook = book.id;
     selectedBookName = book.name;
     isDropdownOpen = false;
-    
+
     // Add has-value class to the dropdown button when it has a value
     const dropdownButton = document.querySelector('.custom-select');
     if (dropdownButton) {
@@ -75,7 +75,7 @@
     isLoading = true;
 
     try {
-      const book = AVAILABLE_BOOKS.find(b => b.id === selectedBook);
+      const book = AVAILABLE_BOOKS.find((b) => b.id === selectedBook);
       if (!book) throw new Error('Book not found');
 
       const response = await fetch(`/books/${book.filename}`);
@@ -127,7 +127,7 @@
   onMount(() => {
     // Add click event listener to close dropdown when clicking outside
     document.addEventListener('click', handleClickOutside);
-    
+
     // Cleanup on component unmount
     return () => {
       document.removeEventListener('click', handleClickOutside);
@@ -138,11 +138,14 @@
 <svelte:head>
   <title>Archivon | Cipher Utility</title>
   <meta name="description" content="A utility for encoding and decoding messages with the Archivon book cipher" />
-  <link href="https://fonts.googleapis.com/css2?family=Rye&family=Special+Elite&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Fredericka+the+Great&display=swap" rel="stylesheet">
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <link rel="icon" href="/favicon-96x96.png" type="image/png" sizes="96x96">
-  <link rel="apple-touch-icon" href="/favicon-96x96.png">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rye&family=Special+Elite&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Fredericka+the+Great&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-96x96.png" type="image/png" sizes="96x96" />
+  <link rel="apple-touch-icon" href="/favicon-96x96.png" />
 </svelte:head>
 
 <main class="min-h-screen bg-zinc-900 text-silver-400 relative">
@@ -167,9 +170,7 @@
         </div>
 
         <div class="wanted-poster">
-          <h1 class="text-4xl md:text-6xl font-bold mb-2 font-display tracking-widest text-brass-light relative z-10 drop-shadow-sm western-text">
-            ARCHIVON
-          </h1>
+          <h1 class="text-4xl md:text-6xl font-bold mb-2 font-display tracking-widest text-brass-light relative z-10 drop-shadow-sm western-text"> ARCHIVON </h1>
           <div class="flex justify-center items-center gap-4 mt-4">
             <div class="h-px w-16 bg-gradient-to-r from-transparent to-silver-500/70"></div>
             <p class="text-sm uppercase tracking-widest font-semibold text-silver-400/80">Order of Records</p>
@@ -179,10 +180,12 @@
 
         <div class="mt-4 ooc-note">
           <p class="text-sm text-silver-400/90 italic px-4 py-2 bg-zinc-800/80 border border-silver-700/50 max-w-2xl mx-auto">
-            <span class="font-semibold">Out-of-Character Note:</span> This is a utility to help you encode and decode messages using the book cipher. Using this tool does not mean your character knows how to work with the cipher - it simply makes the process easier than doing it manually.
+            <span class="font-semibold">Out-of-Character Note:</span> This is a utility to help you encode and decode messages using the book cipher. Using this tool does not mean your
+            character knows how to work with the cipher - it simply makes the process easier than doing it manually.
           </p>
         </div>
-    </header>
+      </div></header
+    >
   </div>
 
   <!-- Main Content -->
@@ -198,27 +201,61 @@
               <!-- Eye SVG with occult background (vertical orientation) -->
               <div class="occult-icon-wrapper">
                 <div class="occult-geometry eye-geometry"></div>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9b17c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-70 relative z-10" style="transform: rotate(90deg);">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#c9b17c"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="opacity-70 relative z-10"
+                  style="transform: rotate(90deg);"
+                >
                   <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"></path>
                   <circle cx="12" cy="12" r="3"></circle>
                 </svg>
               </div>
-              
+
               <!-- Pen SVG with occult background -->
               <div class="occult-icon-wrapper">
                 <div class="occult-geometry pen-geometry"></div>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9b17c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-70 relative z-10">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#c9b17c"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="opacity-70 relative z-10"
+                >
                   <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
                   <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
                   <path d="M2 2l7.586 7.586"></path>
                   <circle cx="11" cy="11" r="2"></circle>
                 </svg>
               </div>
-              
+
               <!-- Lock SVG with occult background -->
               <div class="occult-icon-wrapper">
                 <div class="occult-geometry lock-geometry"></div>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9b17c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-70 relative z-10">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#c9b17c"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="opacity-70 relative z-10"
+                >
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
@@ -232,10 +269,10 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <div>
                 <label for="book-select" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Select Source Text</label>
-                
+
                 <!-- Custom dropdown -->
                 <div id="custom-dropdown" class="relative">
-                  <button 
+                  <button
                     type="button"
                     class="w-full bg-zinc-900/80 text-silver-300/80 placeholder-text-color border-2 border-silver-700 rounded-none px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-silver-500 font-mono text-sm h-[50px] text-left custom-select"
                     on:click={toggleDropdown}
@@ -243,11 +280,11 @@
                   >
                     {selectedBookName || 'Choose a source text...'}
                   </button>
-                  
+
                   {#if isDropdownOpen}
                     <div class="absolute z-10 w-full mt-1 bg-zinc-800 border-2 border-silver-700 max-h-60 overflow-auto custom-dropdown-menu">
                       {#each AVAILABLE_BOOKS as book}
-                        <button 
+                        <button
                           type="button"
                           class="w-full text-left px-4 py-2 cursor-pointer hover:bg-brass-bg hover:text-brass-light focus:bg-brass-bg focus:text-brass-light"
                           on:click={() => selectBook(book)}
@@ -259,7 +296,7 @@
                     </div>
                   {/if}
                 </div>
-                
+
                 <!-- Hidden select for form submission if needed -->
                 <select id="book-select" bind:value={selectedBook} class="hidden">
                   <option value="" disabled>Choose a source text...</option>
@@ -267,7 +304,7 @@
                     <option value={book.id}>{book.name}</option>
                   {/each}
                 </select>
-                
+
                 {#if isLoading}
                   <p class="mt-2 text-silver-400/80 italic text-sm">Loading text from archives...</p>
                 {/if}
@@ -280,11 +317,12 @@
                   {#if !isLoading}
                     {#if parsedBook}
                       <p class="mt-2 text-silver-400/80 text-sm">
-                        <span class="font-semibold text-silver-300">Author:</span> {AVAILABLE_BOOKS.find(b => b.id === selectedBook)?.author}
+                        <span class="font-semibold text-silver-300">Author:</span>
+                        {AVAILABLE_BOOKS.find((b) => b.id === selectedBook)?.author}
                       </p>
-                      {#if AVAILABLE_BOOKS.find(b => b.id === selectedBook)?.description}
+                      {#if AVAILABLE_BOOKS.find((b) => b.id === selectedBook)?.description}
                         <p class="mt-2 text-silver-400/80 text-sm italic">
-                          {AVAILABLE_BOOKS.find(b => b.id === selectedBook)?.description}
+                          {AVAILABLE_BOOKS.find((b) => b.id === selectedBook)?.description}
                         </p>
                       {/if}
                     {/if}
@@ -293,11 +331,11 @@
               </div>
               <div>
                 <label for="keyword" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Cipher Key</label>
-                <input 
-                  type="text" 
-                  id="keyword" 
+                <input
+                  type="text"
+                  id="keyword"
                   bind:value={keyword}
-                  on:input={(e) => keyword = e.target.value.toLowerCase()}
+                  on:input={(e) => (keyword = e.target.value.toLowerCase())}
                   placeholder="Enter your cipher key..."
                   class="w-full bg-zinc-900/80 border-2 border-silver-700 rounded-none px-4 py-3 text-silver-300 focus:outline-none focus:ring-2 focus:ring-silver-500 font-mono text-sm h-[50px]"
                 />
@@ -307,8 +345,11 @@
                     <div class="mb-2">
                       <div class="grid grid-cols-5 w-full gap-1">
                         {#each String(keywordSeed).padStart(5, '0').split('') as digit, i}
-                          <div class="occult-rune aspect-square flex items-center justify-center"
-                               style="--rune-color: hsla({keywordHue + i * 30}, 70%, {keywordBrightness}%, 0.7); --rune-delay: {i * 0.2}s; --rune-rotation: {(parseInt(digit) * 36) % 360}deg;">
+                          <div
+                            class="occult-rune aspect-square flex items-center justify-center"
+                            style="--rune-color: hsla({keywordHue + i * 30}, 70%, {keywordBrightness}%, 0.7); --rune-delay: {i * 0.2}s; --rune-rotation: {(parseInt(digit) * 36) %
+                              360}deg;"
+                          >
                             <div class="rune-svg-container" style="transform: rotate(var(--rune-rotation));">
                               {@html getOccultSymbolForDigit(digit)}
                             </div>
@@ -325,21 +366,17 @@
             <!-- Tabs for Encode/Decode -->
             <div class="mb-6 border-b-2 border-zinc-600">
               <div class="flex">
-                <button 
+                <button
                   class={`py-3 px-6 font-semibold uppercase text-sm tracking-wider ${activeTab === 'encode' ? 'border-b-2 border-silver-400 text-silver-300 bg-zinc-700/50' : 'text-silver-400/80 hover:text-silver-300 hover:bg-zinc-700/30'}`}
                   on:click={() => setActiveTab('encode')}
                 >
-                  <span class="flex items-center">
-                    Encode
-                  </span>
+                  <span class="flex items-center"> Encode </span>
                 </button>
-                <button 
+                <button
                   class={`py-3 px-6 font-semibold uppercase text-sm tracking-wider ${activeTab === 'decode' ? 'border-b-2 border-silver-400 text-silver-300 bg-zinc-700/50' : 'text-silver-400/80 hover:text-silver-300 hover:bg-zinc-700/30'}`}
                   on:click={() => setActiveTab('decode')}
                 >
-                  <span class="flex items-center">
-                    Decode
-                  </span>
+                  <span class="flex items-center"> Decode </span>
                 </button>
               </div>
             </div>
@@ -350,8 +387,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>
                     <label for="input-text" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Content to Encode</label>
-                    <textarea 
-                      id="input-text" 
+                    <textarea
+                      id="input-text"
                       bind:value={inputText}
                       placeholder="Enter the message you wish to encode..."
                       class="w-full h-[200px] bg-zinc-900/80 border-2 border-silver-700 rounded-none px-4 py-3 text-silver-300 focus:outline-none focus:ring-2 focus:ring-silver-500 font-mono text-sm"
@@ -359,8 +396,8 @@
                   </div>
                   <div>
                     <label for="encoded-text" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Encoded Output</label>
-                    <textarea 
-                      id="encoded-text" 
+                    <textarea
+                      id="encoded-text"
                       bind:value={encodedText}
                       readonly
                       class="w-full h-[200px] bg-zinc-900/80 border-2 border-silver-700 rounded-none px-4 py-3 text-silver-300 focus:outline-none focus:ring-2 focus:ring-silver-500 font-mono text-sm"
@@ -368,8 +405,8 @@
                   </div>
                 </div>
                 <div class="flex justify-center mt-4 w-full">
-                  <button 
-                    on:click={encodeMessage} 
+                  <button
+                    on:click={encodeMessage}
                     disabled={!parsedBook || !keyword || !inputText || isLoading}
                     class="px-6 py-3 bg-zinc-700 hover:bg-zinc-600 text-silver-300 font-semibold uppercase text-sm tracking-wider border-2 border-silver-700 focus:outline-none focus:ring-2 focus:ring-silver-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
@@ -383,8 +420,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>
                     <label for="encoded-input" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Encoded Message</label>
-                    <textarea 
-                      id="encoded-input" 
+                    <textarea
+                      id="encoded-input"
                       bind:value={encodedText}
                       placeholder="Enter the encoded message you wish to decode..."
                       class="w-full h-[200px] bg-zinc-900/80 border-2 border-silver-700 rounded-none px-4 py-3 text-silver-300 focus:outline-none focus:ring-2 focus:ring-silver-500 font-mono text-sm"
@@ -392,8 +429,8 @@
                   </div>
                   <div>
                     <label for="decoded-text" class="block text-silver-300 mb-2 font-semibold uppercase text-sm tracking-wider">Decoded Output</label>
-                    <textarea 
-                      id="decoded-text" 
+                    <textarea
+                      id="decoded-text"
                       bind:value={decodedText}
                       readonly
                       class="w-full h-[200px] bg-zinc-900/80 border-2 border-silver-700 rounded-none px-4 py-3 text-silver-300 focus:outline-none focus:ring-2 focus:ring-silver-500 font-mono text-sm"
@@ -401,8 +438,8 @@
                   </div>
                 </div>
                 <div class="flex justify-center mt-4 w-full">
-                  <button 
-                    on:click={decodeMessage} 
+                  <button
+                    on:click={decodeMessage}
                     disabled={!parsedBook || !keyword || !encodedText || isLoading}
                     class="px-6 py-3 bg-zinc-700 hover:bg-zinc-600 text-silver-300 font-semibold uppercase text-sm tracking-wider border-2 border-silver-700 focus:outline-none focus:ring-2 focus:ring-silver-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
@@ -427,23 +464,56 @@
           <!-- Moon SVG -->
           <div class="occult-icon-wrapper">
             <div class="occult-geometry moon-geometry"></div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9b17c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-70 relative z-10">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#c9b17c"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="opacity-70 relative z-10"
+            >
               <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
             </svg>
           </div>
-          
+
           <!-- Star SVG -->
           <div class="occult-icon-wrapper">
             <div class="occult-geometry star-geometry"></div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9b17c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-70 relative z-10">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#c9b17c"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="opacity-70 relative z-10"
+            >
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
             </svg>
           </div>
-          
+
           <!-- Sun SVG -->
           <div class="occult-icon-wrapper">
             <div class="occult-geometry sun-geometry"></div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9b17c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-70 relative z-10">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#c9b17c"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="opacity-70 relative z-10"
+            >
               <circle cx="12" cy="12" r="5"></circle>
               <line x1="12" y1="1" x2="12" y2="3"></line>
               <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -458,7 +528,7 @@
         </div>
         <div class="h-px w-12 bg-gradient-to-l from-transparent to-silver-500/60"></div>
       </div>
-      
+
       <p class="mb-2 text-xs typewriter text-silver-400/70">For Knowledge. For Protection. For Understanding.</p>
     </div>
   </footer>
