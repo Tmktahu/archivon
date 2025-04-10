@@ -3,7 +3,7 @@
   import RecipeList from './RecipeList.svelte';
   import RecipeDetail from './RecipeDetail.svelte';
 
-  let isAdmin = $state(true);
+  let isAdmin = $state(false);
 
   onMount(() => {
     // @ts-ignore
