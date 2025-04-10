@@ -47,6 +47,16 @@
     recipe = null;
     EventBus.emit(Events.CLEAR_SELECTED_RECIPE);
   }
+  
+  function addComponentToRecipe() {
+    if (!recipe) return;
+    recipe.components.push({ name: '', amount: 1 });
+  }
+
+  function removeComponentFromRecipe(index: number) {
+    if (!recipe) return;
+    recipe.components.splice(index, 1);
+  }
 </script>
 
 {#if recipe}
@@ -106,8 +116,10 @@
           <div class="flex gap-2 mb-1">
             <input class="flex-1 p-1 bg-zinc-800/40 border border-zinc-700/40 text-white" placeholder="Component Name" bind:value={component.name} />
             <input type="number" class="w-20 p-1 bg-zinc-800/40 border border-zinc-700/40 text-white" placeholder="Amount" bind:value={component.amount} />
+            <button type="button" class="text-silver-500/80 hover:text-silver-300/90 transition-colors text-xs" on:click={() => removeComponentFromRecipe(index)} title="Remove Component">✖</button>
           </div>
         {/each}
+        <button type="button" class="mt-2 px-2 py-1 bg-zinc-700/40 hover:bg-zinc-700/60 text-brass-light/80 border border-zinc-700/50 text-xs transition-colors" on:click={addComponentToRecipe}>+ ADD COMPONENT</button>
       </div>
     </div>
     <div class="mt-4 flex gap-2">
