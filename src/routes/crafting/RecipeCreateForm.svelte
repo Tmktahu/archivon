@@ -7,6 +7,7 @@
   export let newRecipeCategory = CRAFTING_CATEGORIES.BASIC;
   export let newRecipeJob = CRAFTING_JOBS.NONE;
   export let newRecipeExperience = 0;
+  export let newRecipeDescription = '';
   export let newRecipeComponents = [{ name: '', amount: 1 }];
   const { createRecipe } = useCrafting();
 
@@ -17,6 +18,7 @@
       category: newRecipeCategory,
       job: newRecipeJob,
       experience: newRecipeExperience,
+      description: newRecipeDescription,
       components: newRecipeComponents,
     };
 
@@ -29,6 +31,7 @@
       newRecipeCategory = CRAFTING_CATEGORIES.BASIC;
       newRecipeJob = CRAFTING_JOBS.NONE;
       newRecipeExperience = 0;
+      newRecipeDescription = '';
       newRecipeComponents = [{ name: '', amount: 1 }];
     } catch (error) {
       console.error('Failed to create recipe:', error);
@@ -75,6 +78,16 @@
             placeholder="Enter recipe name"
             required
           />
+        </div>
+
+        <div class="mb-2">
+          <label for="recipe-description" class="block text-brass-mid/90 text-xs uppercase tracking-wider mb-1 font-semibold">Description</label>
+          <textarea
+            id="recipe-description"
+            bind:value={newRecipeDescription}
+            class="w-full bg-zinc-800/40 border border-zinc-700/50 p-1.5 text-white/90 placeholder-silver-600/50 focus:outline-none focus:border-brass-mid/70 typewriter text-sm min-h-[80px]"
+            placeholder="Enter recipe description"
+          ></textarea>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">

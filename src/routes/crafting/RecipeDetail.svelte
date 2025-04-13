@@ -15,7 +15,9 @@
 
   onMount(() => {
     EventBus.on(Events.SELECT_RECIPE, (receivedRecipe) => {
-      recipe = receivedRecipe as CraftingRecipe;
+      recipe = {
+        ...receivedRecipe,
+      };
       isEditing = false;
     });
   });
@@ -38,7 +40,9 @@
     if (!recipe) return;
     await updateRecipe(recipe);
     isEditing = false;
-    EventBus.emit(Events.UPDATE_RECIPE_LIST);
+    setTimeout(() => {
+      EventBus.emit(Events.UPDATE_RECIPE_LIST);
+    }, 200);
   }
 
   async function onDeleteRecipe() {
@@ -46,7 +50,9 @@
     await deleteRecipe(recipe.id);
     recipe = null;
 
-    EventBus.emit(Events.UPDATE_RECIPE_LIST);
+    setTimeout(() => {
+      EventBus.emit(Events.UPDATE_RECIPE_LIST);
+    }, 200);
   }
 
   function clearSelectedRecipe() {
@@ -159,6 +165,14 @@
                 bind:value={recipe.experience}
               />
             </div>
+            <div class="md:col-span-2">
+              <h4 class="text-brass-mid/90 text-xs uppercase tracking-wider mb-1 font-semibold">Description</h4>
+              <textarea
+                class="w-full bg-zinc-800/40 border border-zinc-700/50 p-1.5 text-white/90 placeholder-silver-600/50 focus:outline-none focus:border-brass-mid/70 typewriter text-sm min-h-[80px]"
+                bind:value={recipe.description}
+                placeholder="Enter recipe description"
+              ></textarea>
+            </div>
             <div class="md:col-span-2 flex flex-col flex-grow min-h-0 overflow-hidden">
               <div class="flex-shrink-0 flex justify-between items-center mb-1">
                 <h4 class="text-brass-mid/90 text-xs uppercase tracking-wider font-semibold">Components</h4>
@@ -235,6 +249,13 @@
           </p>
         </div>
       </div>
+
+      {#if recipe.description}
+        <div class="mb-4">
+          <h4 class="text-brass-mid/90 text-sm uppercase tracking-wider mb-1 font-semibold">Description</h4>
+          <p class="text-white/90 text-base whitespace-pre-line">{recipe.description}</p>
+        </div>
+      {/if}
 
       <div>
         <h4 class="text-brass-mid/90 text-sm uppercase tracking-wider mb-2 border-b border-zinc-700/50 pb-1 font-semibold">Components Required</h4>

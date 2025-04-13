@@ -93,7 +93,7 @@ export const useRest = () => {
         return data;
       }
     } catch (error) {
-      // console.error(error);
+      console.error(error);
       return null;
     }
   };

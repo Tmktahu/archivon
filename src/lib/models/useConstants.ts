@@ -18,7 +18,7 @@ export const API_ROUTE_PATHS = {
   [API_ROUTES.getCraftingRecipe]: 'reddead/craftingRecipe/:id',
   [API_ROUTES.createCraftingRecipe]: 'reddead/craftingRecipe',
   [API_ROUTES.deleteCraftingRecipe]: 'reddead/craftingRecipe/:id',
-  [API_ROUTES.deleteCraftingRecipe]: 'reddead/craftingRecipe/:id',
+  [API_ROUTES.updateCraftingRecipe]: 'reddead/craftingRecipe/:id',
 
   [API_ROUTES.getItems]: 'reddead/items',
   [API_ROUTES.getItem]: 'reddead/item/:id',

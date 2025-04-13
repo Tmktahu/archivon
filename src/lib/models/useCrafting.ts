@@ -12,13 +12,14 @@ export interface CraftingRecipe {
   experience: number;
   category: string;
   job: string;
+  description?: string;
 }
 
 // Import recipes from constants
 import { useRest } from './useRest';
 import { API_ROUTES, CRAFTING_CATEGORIES } from './useConstants';
 
-const { addQuery, doQuery } = useRest();
+const { doQuery } = useRest();
 
 export const useCrafting = () => {
   // Store for crafting recipes - initialize with recipes from constants
@@ -104,7 +105,7 @@ export const useCrafting = () => {
     }
 
     recipeData.components = JSON.stringify(recipeData.components);
-    addQuery(API_ROUTES.createCraftingRecipe, recipeData, () => {});
+    await doQuery(API_ROUTES.createCraftingRecipe, recipeData);
   };
 
   const updateRecipe = async (recipeData: any) => {
@@ -129,15 +130,16 @@ export const useCrafting = () => {
       experience: recipeData.experience,
       category: recipeData.category,
       job: recipeData.job,
+      description: recipeData.description,
       components: JSON.stringify(recipeData.components),
     };
 
-    addQuery(API_ROUTES.updateCraftingRecipe, inputData, () => {});
+    await doQuery(API_ROUTES.updateCraftingRecipe, inputData);
   };
 
   // Function to delete a recipe
   const deleteRecipe = async (recipeId: string) => {
-    addQuery(API_ROUTES.deleteCraftingRecipe, { id: recipeId }, () => {});
+    await doQuery(API_ROUTES.deleteCraftingRecipe, { id: recipeId });
   };
 
   // Return the functions as an object
